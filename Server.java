@@ -98,7 +98,7 @@ public class Server {
 				processFile("feedstyle.css", "text/css", socket, writer);
 			}else if(head[1].equals("/style.css")) {
 				processFile("style.css", "text/css", socket, writer);
-			}else if(head[1].equals("/landing.css"){
+			}else if(head[1].equals("/landing.css")){
 				processFile("landing.css", "text/css", socket, writer);			
 			}else{
 				//404 Not Found
