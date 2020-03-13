@@ -89,7 +89,7 @@ public class Server {
 			if(new_user == false && head[1].equals("/") || head[1].equals("/index.html")){
 				processFile("index.html", "text/html", socket, writer);
 			}else if(new_user == true && head[1].equals("/") || head[1].equals("/index.html")){
-				processFile("src/index.html", "text/html", socket, writer);
+				processFile("index.html", "text/html", socket, writer);
 			}else if(head[1].equals("/feed.html")){
 				processFile("feed.html", "text/html", socket, writer);
 			}else if(head[1].equals("/Sign-in.html")){
