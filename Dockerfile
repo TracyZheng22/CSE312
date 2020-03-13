@@ -21,6 +21,6 @@ FROM openjdk:8
 EXPOSE 8000
 
 # Run the app
-#RUN javac *.java
+RUN javac *.java
 CMD ["java", "Server"]
 
