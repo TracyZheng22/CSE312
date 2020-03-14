@@ -2,6 +2,13 @@ FROM ubuntu:16.04
 
 RUN apt-get update
 
+#https://hub.docker.com/_/openjdk
+FROM openjdk:8
+
+# Allow port 8000 to be accessed
+# from outside the container
+EXPOSE 8000
+
 # Set the home directory to /root
 ENV HOME /root
 
@@ -13,14 +20,8 @@ COPY . .
 
 RUN ls
 
-#https://hub.docker.com/_/openjdk
-FROM openjdk:8
-
-# Allow port 8000 to be accessed
-# from outside the container
-EXPOSE 8000
-
 # Run the app
-RUN javac *.java
+RUN ["javac", "/root/Server.java"]
+
 CMD ["java", "Server"]
 
