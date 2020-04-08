@@ -1,0 +1,37 @@
+body {
+    margin:50px;
+    background-image: url(connected.png), linear-gradient(lightgreen , #9198e5);
+}
+
+.ProfileContainer{
+    display: inline-block;
+    float:left;
+    height: 300px;
+}
+
+.PhoneNumber{
+    display: inline-block;
+    float:left;
+}
+
+.PostPart{
+    margin-left: 300px;
+    height: 200px;
+}
+
+.UserName{
+    height: 100px;
+}
+
+.ProfilePhoto{
+    background-color: white;
+    width: 200px;
+    height: 200px;
+}
+
+.Contact{
+    background-color: azure;
+    height: 200px;
+    margin-left: 250px;
+    margin-bottom: 100px;
+}
