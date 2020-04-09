@@ -1,0 +1,22 @@
+body{
+    margin:50px;
+    background-image: url(connected.png);
+    background-color: lightgreen;
+}
+
+#top{
+    height: 350px;
+    width: 300px;
+    border: solid black;
+}
+
+#friendfunc{
+    text-align: center;
+}
+
+#friends {
+    overflow: scroll; 
+    overflow-x: hidden; 
+    width: 300px; 
+    height: 300px;
+}
