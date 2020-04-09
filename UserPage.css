@@ -1,6 +1,7 @@
 body {
     margin:50px;
-    background-image: url(connected.png), linear-gradient(lightgreen , #9198e5);
+    background-image: url(connected.png);
+    background-color: lightgreen;
 }
 
 .ProfileContainer{
@@ -17,6 +18,11 @@ body {
 .PostPart{
     margin-left: 300px;
     height: 200px;
+    border-left: solid black;
+}
+
+.nb{
+    list-style-type: none;
 }
 
 .UserName{
