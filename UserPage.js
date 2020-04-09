@@ -1,3 +1,16 @@
+var open = false;
+var fl = document.getElementById("friendslist");
+function friendsList() {
+    if (!open) {
+        fl.style.bottom = "0";
+        open = true;
+    } else {
+        fl.style.bottom = "-330px";
+        open = false;
+    }
+}
+
+/* THROWS ERROR: FIX
 $('.nav ul li').click(function(){
   $(this).addClass("active").siblings().removeClass('active');
 })
@@ -12,3 +25,4 @@ function changeTabs(panelIndex){
   Tab[panelIndex].style.display = 'block';
 }
 Tab(0);
+*/

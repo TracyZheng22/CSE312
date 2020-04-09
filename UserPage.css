@@ -69,3 +69,26 @@ body {
 h2 {
     color: darkgreen;
 }
+
+#friendslist{
+    background-color: palegreen;
+	background-image: radial-gradient(white 10%, transparent 10%);
+	background-size: 30px 30px;
+    height: 350px;
+    width: 300px;
+    border: solid black;
+    position: fixed;
+    bottom: -330px;
+    right: 0;
+}
+
+#friendfunc{
+    text-align: center;
+}
+
+#friends {
+    overflow: scroll; 
+    overflow-x: hidden; 
+    width: 300px; 
+    height: 300px;
+}
