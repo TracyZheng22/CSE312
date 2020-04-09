@@ -5,6 +5,9 @@ body{
 }
 
 #top{
+    background-color: palegreen;
+	background-image: radial-gradient(white 10%, transparent 10%);
+	background-size: 30px 30px;
     height: 350px;
     width: 300px;
     border: solid black;
