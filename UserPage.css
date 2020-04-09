@@ -2,6 +2,7 @@ body {
     margin:50px;
     background-image: url(boxconnected.png);
     background-color: palegoldenrod;
+    font-family: sans-serif;
 }
 
 .TopPart{
@@ -12,6 +13,11 @@ body {
     z-index  : -1;
     box-shadow: 0px 13px 10px black;
     transform: rotate(1deg);
+}
+
+.Header{
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .ProfileContainer{
@@ -35,8 +41,16 @@ body {
     list-style-type: none;
 }
 
-.UserName{
-    height: 100px;
+.Username{
+    margin-top: 30px;
+    font-size: 35px;
+    font-style: italic;
+    color: black;
+}
+
+.ProfileMain{
+    margin: 40px;
+    margin-top: 30px;
 }
 
 .ProfilePhoto{
@@ -50,4 +64,8 @@ body {
     height: 200px;
     margin-left: 250px;
     margin-bottom: 100px;
+}
+
+h2 {
+    color: darkgreen;
 }
