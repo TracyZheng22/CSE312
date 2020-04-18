@@ -17,6 +17,10 @@ if(socket.readyState != WebSocket.CLOSED){
 //    div.appendChild(tag);
 //} 
 
+//Ryan note: since we are sending different messages over the same websocket
+//Remember to send a unique ID first for two way identification!
+//Perhaps something like username + sequence number + randomized integer to 
+//roughly handle upload concurrency.
 function sendMessage() {    
     message = document.getElementById("formmsg").value;
     console.log("send: " + message);
