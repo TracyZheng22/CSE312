@@ -41,6 +41,22 @@
             </div>
             <hr>
             <div class="ProfileMain">
+                <button class="collapse">Create New Post</button>
+                <div class="postDiv">
+                    <br>
+                    <form onsubmit="sendMessage(); return false;" id="cform">
+                        <label for="formmsg">Message: </label>
+                        <br>
+                        <input id="formmsg" type="text" name="msg">
+                        <br>
+                        <label for="formmedia"></label>
+                        <br>
+                        <input id="formmedia" type="file" name="media">
+                        <br>
+                        <br>
+                        <input type="submit" value="Submit">
+                    </form> 
+                </div>
                 <div class="ProfilePosts">
                     <h2>User Posts</h2>
                     <p>Hey bro ja eat yet</p>

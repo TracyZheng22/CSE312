@@ -92,3 +92,26 @@ h2 {
     width: 300px; 
     height: 300px;
 }
+
+.collapse {
+    background-color: darkslategrey;
+    color: white;
+    cursor: pointer;
+    padding: 20px;
+    border: none;
+    width: 100%;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
+.collapsible:hover {
+  background-color: #ccc;
+}
+
+.postDiv {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
