@@ -1,16 +1,3 @@
-var coll = document.getElementsByClassName("collapse");
-for (var i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var postDiv = this.nextElementSibling;
-    if (postDiv.style.display === "block") {
-      postDiv.style.display = "none";
-    } else {
-      postDiv.style.display = "block";
-    }
-  });
-}
-
 var open = false;
 var fl = document.getElementById("friendslist");
 function friendsList() {
@@ -21,6 +8,18 @@ function friendsList() {
         fl.style.bottom = "-330px";
         open = false;
     }
+}
+
+var coll = document.getElementsByClassName("collapse");
+for (var i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
 }
 
 /* THROWS ERROR: FIX

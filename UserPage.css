@@ -10,6 +10,7 @@ body {
     background-color: lightgreen;
     padding: 20px;
     position : relative;
+    z-index  : -1;
     box-shadow: 0px 13px 10px black;
     transform: rotate(1deg);
 }
@@ -93,7 +94,7 @@ h2 {
 }
 
 .collapse {
-    background-color: seagreen;
+    background-color: darkslategrey;
     color: white;
     cursor: pointer;
     padding: 20px;
@@ -104,21 +105,13 @@ h2 {
     font-size: 15px;
 }
 
-.active {
-    background-color: darkseagreen;
-    color: green;
-    border-top: solid green;
-}
-
-.collapse:hover {
-    background-color: darkslategray;
-    color: lightgreen;
+.collapsible:hover {
+  background-color: #ccc;
 }
 
 .postDiv {
-    padding: 0 18px;
-    display: none;
-    overflow: hidden;
-    background-color: darkseagreen;
-    border-bottom: solid green;
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
 }
