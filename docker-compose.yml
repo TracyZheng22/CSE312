@@ -1,0 +1,16 @@
+version: "2.0"
+services:
+  bookface:
+    build:
+      context: https://github.com/TracyZheng22/CSE312.git
+      dockerfile: Dockerfile
+  
+  db:
+     image: 'mongo'
+     container_name: 'mongo-container'
+     environment:
+       - MONGO_INITDB_DATABASE=CSE312
+       - MONGO_INITDB_ROOT_USERNAME=cse312g20
+       - MONGO_INITDB_ROOT_PASSWORD=2020sucks
+     ports:
+       - '27017:27017'
