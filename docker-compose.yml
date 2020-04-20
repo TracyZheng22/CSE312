@@ -4,7 +4,8 @@ services:
     build:
       context: https://github.com/TracyZheng22/CSE312.git
       dockerfile: Dockerfile
-  
+    ports:
+      - '8000:8000'
   db:
      image: 'mongo'
      container_name: 'mongo-container'
