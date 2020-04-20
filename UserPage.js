@@ -27,8 +27,8 @@ function sendMessage() {
     socket.send(document.getElementById("NameOfUser").value+message);
     var reset = document.getElementById("formmsg");
     reset.value = reset.defaultValue;
-    //send image file in case:
-  
+    socket.send(document.getElementById("formmedia"));
+    
 
 }
 
