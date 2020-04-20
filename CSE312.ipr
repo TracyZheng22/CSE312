@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <option name="DEFAULT_COMPILER" value="Eclipse" />
     <annotationProcessing>
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -9,7 +10,7 @@
         <module name="CSE312" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="13">
       <module name="CSE312" target="" />
     </bytecodeTargetLevel>
   </component>
@@ -72,6 +73,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.9.10/jackson-databind-2.9.10-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.mongodb:mongo-java-driver:3.12.3">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mongodb/mongo-java-driver/3.12.3/mongo-java-driver-3.12.3.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mongodb/mongo-java-driver/3.12.3/mongo-java-driver-3.12.3-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/mongodb/mongo-java-driver/3.12.3/mongo-java-driver-3.12.3-sources.jar!/" />
       </SOURCES>
     </library>
   </component>

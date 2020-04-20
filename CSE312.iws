@@ -2,15 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7feaf245-5c87-4f24-a424-d5486a013fc4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Config.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ConfigManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Json.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/http.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/HttpConfigException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ContentHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSE312.iml" beforeDir="false" afterPath="$PROJECT_DIR$/CSE312.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSE312.ipr" beforeDir="false" afterPath="$PROJECT_DIR$/CSE312.ipr" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CSE312.iws" beforeDir="false" afterPath="$PROJECT_DIR$/CSE312.iws" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/landing.js" beforeDir="false" afterPath="$PROJECT_DIR$/landing.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/CSE312.iml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/CSE312.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/CSE312.ipr" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/CSE312.ipr" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/CSE312.iws" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/CSE312.iws" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,7 +81,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1587334158294</updated>
-      <workItem from="1587334159957" duration="7906000" />
+      <workItem from="1587334159957" duration="12335000" />
     </task>
     <servers />
   </component>
@@ -107,26 +109,26 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="753" y="296" key="FileChooserDialogImpl/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587337242402" />
-    <state width="1865" height="257" key="GridCell.Tab.0.bottom" timestamp="1587341892090">
+    <state width="1865" height="283" key="GridCell.Tab.0.bottom" timestamp="1587349538096">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1865" height="257" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587341892090" />
-    <state width="1865" height="257" key="GridCell.Tab.0.center" timestamp="1587341892090">
+    <state width="1865" height="283" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587349538096" />
+    <state width="1865" height="283" key="GridCell.Tab.0.center" timestamp="1587349538096">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1865" height="257" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587341892090" />
-    <state width="1865" height="257" key="GridCell.Tab.0.left" timestamp="1587341892089">
+    <state width="1865" height="283" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587349538096" />
+    <state width="1865" height="283" key="GridCell.Tab.0.left" timestamp="1587349538096">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1865" height="257" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587341892089" />
-    <state width="1865" height="257" key="GridCell.Tab.0.right" timestamp="1587341892090">
+    <state width="1865" height="283" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587349538096" />
+    <state width="1865" height="283" key="GridCell.Tab.0.right" timestamp="1587349538096">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1865" height="257" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587341892090" />
-    <state x="83" y="0" key="SettingsEditor" timestamp="1587338914865">
+    <state width="1865" height="283" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587349538096" />
+    <state x="27" y="0" width="1460" height="886" key="SettingsEditor" timestamp="1587349517380">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="83" y="0" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587338914865" />
+    <state x="27" y="0" width="1460" height="886" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1587349517380" />
     <state x="591" y="335" width="865" height="526" key="org.intellij.images.editor.actions.BackgroundImageDialog" timestamp="1587334425534">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

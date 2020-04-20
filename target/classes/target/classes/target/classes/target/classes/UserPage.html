@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>UserPage</title>
+        <link rel="stylesheet" href="Userpage.css">
+    </head>
+    <body>
+        <div class="TopPart">
+            <div class="Header">
+                <div class="ProfileContainer">
+                    <div class="ProfilePhoto">
+                        <img src="SpongeBob_stock_art.png" width="200">
+                    </div>
+                    <div class="PersonalInfo">
+                        <h1 class="Username">CSE312 Group</h1>
+                    </div>
+                </div>
+                <div class="Contact">
+                    <div class="PhoneNumber">
+                        <p><i class="ThisIsPhoneNumer">&#128222;123-456-7890</i></p>
+                        <p><i class="ThisIsEmail">&#9993;something@something.com</i></p>
+                        <div class="UserDescirption">
+                            <p class="Discription">Creeper?</p>
+                        </div>
+                        <button type="button" name="MessageButton">Message</button>
+                    </div>
+                    <div class="PostPart">
+                        <div class="nav">
+                            <ul class="nb">
+                                <li onclick="tabs(0)" class="UserPost">
+                                  Posts
+                                </li>
+                                <li onclick="tabs(1)" class="UserReview">
+                                  Comments
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="ProfileMain">
+                <div class="ProfilePosts">
+                    <h2>User Posts</h2>
+                    <button type="button" class="collapse">Create New Post</button>
+                    <div class="postDiv">
+                        <br>
+                        <form onsubmit="sendMessage(); return false;" id="cform">
+                            <label for="formmsg">Message: </label>
+                            <br>
+                            <input id="formmsg" type="text" name="msg">
+                            <br>
+                            <label for="formmedia"></label>
+                            <br>
+                            <input id="formmedia" type="file" name="media">
+                            <br>
+                            <br>
+                            <input type="submit" value="Submit">
+                        </form>
+                        <br>    
+                    </div>
+                    <p>Hey bro ja eat yet</p>
+                </div>
+                <div class="ProfileComment">
+                    <h2>Comments</h2>
+                    <p>Yea</p>
+                </div>
+                <div class="ProfileSetting">
+                    <h2>Account Setting</h2>
+                    <p>What setting you want?</p>
+                </div>
+            </div>
+        </div>
+        <div id="friendslist">
+                <div id="friendfunc">
+                    <button onclick="friendsList()" id="flopen">Friends List</button>
+                    <button id="addFriend">Add A Friend</button>
+                    <button id="edit">Edit</button>
+                </div>
+                <div id="friends">
+                </div>
+        </div>
+        <script type="text/javascript" src="UserPage.js"></script>
+    </body>
+</html>
