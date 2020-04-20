@@ -19,8 +19,11 @@
                     <img src="SpongeBob_stock_art.png">
                 </div>
                 <div class="reactionContainer">
-                    <p class="reactions">0 Likes</p>
-                    <button class="likeButton" onclick="like()">Like</button>
+                  <form>
+                    <input type="hidden" id="readCounterPNum" value=""/>
+                  </form>
+                    <p class="reactions"><b id ="LikeCountP"></b></p>
+                    <button class="likeButton" onclick="likePost()">Like</button>
                 </div>
                 <div class="comments">
                     <div class="commentBlock">
@@ -30,12 +33,16 @@
                         </div>
                         <p class = "comment">example comment here</p>
                         <div class="reactionContainer">
-                            <p class="reactions">0 Likes</p>
-                            <button class="likeButton" onclick="like()">Like</button>
+                          <form>
+                            <input type="hidden" id="readCounterCNum" value=""/>
+                          </form>
+                            <p class="reactions"><b id ="LikeCountC"></b></p>
+                            <button class="likeButton" onclick="likeCommon()">Like</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <script  type="text/javascript" src="TempPostScript.js"></script>
     </body>
 </html>
