@@ -7,7 +7,6 @@ body {
     margin:auto;
     background-image: url(connected.png), linear-gradient(lightgreen , #9198e5);
 }
-
 .center {
     display: flex;
     align-items: center;

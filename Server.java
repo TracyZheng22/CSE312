@@ -94,6 +94,8 @@ public class Server {
 				processFile("feed.html", "text/html", socket, writer);
 			}else if(head[1].equals("/Sign-in.html")){
 				processFile("Sign-in.html", "text/html", socket, writer);
+			//}else if(head[1].equals("/BookFaceLogo.png")){
+				//processFile("index.html", "image/png", socket, writer);
 			}else if(head[1].equals("/feedstyle.css")) {
 				processFile("feedstyle.css", "text/css", socket, writer);
 			}else if(head[1].equals("/style.css")) {
@@ -122,8 +124,8 @@ public class Server {
 		writer.println("Content-Length: " + length);
 		writer.println("Set-Cookie: visit=true; Max-Age: 10000");
 		writer.println();
-		/*String line;
-		if(type == "image/jpg") {
+		String line;
+		if(type == "image/jpg" || type == "image/png") {
 			//https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html
 			byte[] image = Files.readAllBytes(f.toPath());
 			socket.getOutputStream().write(image);
@@ -131,7 +133,7 @@ public class Server {
 		}
 		while((line = file.readLine()) != null) {
 			writer.println(line);
-		}*/
+		}
 		byte[] bytes = Files.readAllBytes(f.toPath());
 		socket.getOutputStream().write(bytes);
 		return;
