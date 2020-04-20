@@ -4,7 +4,7 @@ if(socket.readyState != WebSocket.CLOSED){
 }else{
     console.log("Closed!");
 }
-//Ryan note: From homework 7 for websocket reference. Please remember to correctly format input in the server 
+//Ryan note: From homework 7 for websocket reference. Please remember to correctly format input in the server
 //For security (change tags to html versions, etc.)
 //
 //socket.onmessage = renderMessages;
@@ -15,18 +15,21 @@ if(socket.readyState != WebSocket.CLOSED){
 //    tag.innerHTML = text;
 //    let div = document.getElementById("chatHistory");
 //    div.appendChild(tag);
-//} 
+//}
 
 //Ryan note: since we are sending different messages over the same websocket
 //Remember to send a unique ID first for two way identification!
-//Perhaps something like username + sequence number + randomized integer to 
+//Perhaps something like username + sequence number + randomized integer to
 //roughly handle upload concurrency.
-function sendMessage() {    
+function sendMessage() {
     message = document.getElementById("formmsg").value;
     console.log("send: " + message);
-    socket.send(message);
+    socket.send(document.getElementById("NameOfUser").value+message);
     var reset = document.getElementById("formmsg");
     reset.value = reset.defaultValue;
+    //send image file in case:
+  
+
 }
 
 var coll = document.getElementsByClassName("collapse");
