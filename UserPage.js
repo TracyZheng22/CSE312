@@ -28,7 +28,15 @@ function sendMessage() {
     var reset = document.getElementById("formmsg");
     reset.value = reset.defaultValue;
     socket.send(document.getElementById("formmedia"));
-    
+ //This part might be use for show image on the page, but still yet sure to put it or not
+ //socket.onmessage = function (event) { 
+ //var bytes = new Uint8Array(event.data);
+ //   var data = "";
+ //   var len = bytes.byteLength;
+ //   for (var i = 0; i < len; ++i) {
+ //   	data += String.fromCharCode(bytes[i]);
+ //   }
+ //};
 
 }
 
