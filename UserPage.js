@@ -22,9 +22,34 @@ if(socket.readyState != WebSocket.CLOSED){
 //Perhaps something like username + sequence number + randomized integer to
 //roughly handle upload concurrency.
 function sendMessage() {
-    message = document.getElementById("formmsg").value;
-    console.log("send: " + message);
-    socket.send(document.getElementById("NameOfUser").value+message);
+    var type = 0;
+    var message = document.getElementById("formmsg").value;
+    var file = document.getElementById("formmedia");
+    if(message.byteLength != 0 && file.files.length)
+    {
+        type = 2;
+        var reader = new FileReader();
+
+        reader.onload = function(e)
+        {
+            rawData = e.target.result;
+        };
+        reader.readAsBinaryString(file.files[0]);
+    }else if(message.byteLength != 0){
+        console.log("send: " + "0" + document.getElementById("NameOfUser").innerHTML+message);
+        socket.send("0"+document.getElementById("NameOfUser").innerHTML+message);
+    }else if(file.files.length)
+    {
+        type = 1;
+        var reader = new FileReader();
+
+        reader.onload = function(e)
+        {
+            rawData = e.target.result;
+        };
+
+        reader.readAsBinaryString(file.files[0]);
+    }
     var reset = document.getElementById("formmsg");
     reset.value = reset.defaultValue;
     socket.send(document.getElementById("formmedia"));

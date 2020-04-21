@@ -21,6 +21,10 @@ import java.security.cert.CertificateException;
 import java.util.HashMap;
 import javax.net.ssl.*;
 
+/**
+ * Main class that beings the server on the specified port and handles incoming requests through
+ * a ServerSocket.
+ */
 public class Server {
 	static int port = 8000;
 	//static SSLServerSocket ssocket;
@@ -103,6 +107,11 @@ public class Server {
 	}
 }
 
+/**
+ * Subclass that takes each accepted request in it's own thread, so that the server can accept
+ * multiple requests at once. 
+ *
+ */
 class ServerBox extends Thread{
 	static int port = 8000;
 	Socket socket;
@@ -111,6 +120,15 @@ class ServerBox extends Thread{
 	InputStreamReader altReader;
 	BufferedReader reader;
 	
+	/**
+	 * Sets initial parameters for the ServerBox
+	 * 
+	 * @param s socket
+	 * @param w writer
+	 * @param a alt
+	 * @param ar altReader
+	 * @param r reader
+	 */
 	public ServerBox(Socket s, PrintWriter w, InputStream a, InputStreamReader ar, BufferedReader r) {
 		socket = s;
 		writer = w;
@@ -221,6 +239,15 @@ class ServerBox extends Thread{
 		}
 	}
 
+	/**
+	 * Processes a single file on the server through an HTTP response.
+	 * 
+	 * @param name filename
+	 * @param type Currently supported file types: text/* image/*
+	 * @param socket 
+	 * @param writer
+	 * @throws IOException
+	 */
 	public static void processFile(String name, String type, Socket socket, PrintWriter writer) throws IOException{
 		//FileReader documentation from
 		//https://docs.oracle.com/javase/8/docs/api/java/io/FileReader.html
@@ -234,7 +261,7 @@ class ServerBox extends Thread{
 		writer.println("Set-Cookie: visit=true; Max-Age: 10000");
 		writer.println();
 		String line;
-		if(type == "image/jpg" || type == "image/png") {
+		if(type.contains("image")) {
 			//https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html
 			byte[] image = Files.readAllBytes(f.toPath());
 			socket.getOutputStream().write(image);
@@ -248,6 +275,15 @@ class ServerBox extends Thread{
 		return;
 	}
 
+	
+	/**
+	 * Processes queries, currently unused and unmodified for this project.
+	 * 
+	 * @param pairs
+	 * @param socket
+	 * @param writer
+	 * @throws IOException
+	 */
 	public static void processQuery(HashMap<String, String> pairs, Socket socket, PrintWriter writer) throws IOException {
 		//Probably adding more later, but this satisfies the requirement.
 		if(pairs.containsKey("print")) {
@@ -262,6 +298,13 @@ class ServerBox extends Thread{
 		}
 	}
 
+	/**
+	 * Produces 404 Not Found http response.
+	 * 
+	 * @param text
+	 * @param socket
+	 * @param writer
+	 */
 	public static void print404Text(String text, Socket socket, PrintWriter writer) {
 		writer.println("HTTP/1.1 404 Not Found");
 		writer.println("Content-Type: text/plain; charset=utf-8");
@@ -271,6 +314,13 @@ class ServerBox extends Thread{
 		writer.println(text);
 	}
 
+	/**
+	 * Sends a plaintext response
+	 * 
+	 * @param text plaintext message
+	 * @param socket 
+	 * @param writer
+	 */
 	public static void printPlainText(String text, Socket socket, PrintWriter writer) {
 		writer.println("HTTP/1.1 200 OK");
 		writer.println("Content-Type: text/plain; charset=utf-8");
@@ -280,6 +330,12 @@ class ServerBox extends Thread{
 		writer.println(text);
 	}
 
+	/**
+	 * Query decoding, currently unused and unmodified for this project
+	 * 
+	 * @param text
+	 * @return decoded text
+	 */
 	public static String decodeQuery(String text) {
 		try {
 			text = URLDecoder.decode(text, "UTF-8");
@@ -291,6 +347,14 @@ class ServerBox extends Thread{
 		return text;
 	}
 
+	
+	/**
+	 * First line of defense against injection attacks, currently unmodified and
+	 * likely to be used.
+	 * 
+	 * @param text
+	 * @return
+	 */
 	public static String injectionDefense(String text) {
 		text = text.replaceAll("&", "&amp;");
 		text = text.replaceAll("<", "&lt;");

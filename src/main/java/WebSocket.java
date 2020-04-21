@@ -5,11 +5,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 
-/*
- * Ryan - Code from Hw7, modified for project use.
+/**
+ * Websocket class that handles websocket connections.
+ * 
  */
 public class WebSocket{
 	Socket socket;
@@ -77,12 +79,28 @@ public class WebSocket{
 					}
 				}
 				
-				//Convert payload to string
-				String message = new String(payload);
-				System.out.println("Message: " + message);
+				String msg = new String(payload);
+				System.out.println("Payload: " + msg);
 				
-				//Objective 4: Multicast to all WebSockets
-				write(payload, line2);
+				//Get type (1 byte)
+				//0=Post message
+				//1=Post file
+				//2=Post message and file
+				//3=Like
+				//4=Comment
+				int type = (payload[0] & 0xFF);
+				System.out.println(type);
+				payload = Arrays.copyOfRange(payload, 1, payload.length);
+				
+				if(type == 0) {
+					System.out.println("Post Message!");
+					//Convert payload to string
+					String message = new String(payload);
+					System.out.println("Message: " + message);
+				}
+				
+				
+				//write(payload, line2);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -173,4 +191,11 @@ public class WebSocket{
                 ((buffer[offset + 6] & 255) <<  8) +
                 ((buffer[offset + 7] & 255) <<  0));
     }
+	
+	public static String injectionDefense(String text) {
+		text = text.replaceAll("&", "&amp;");
+		text = text.replaceAll("<", "&lt;");
+		text = text.replaceAll(">", "&gt;");
+		return text;
+	}
 }
