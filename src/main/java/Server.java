@@ -23,8 +23,9 @@ import javax.net.ssl.*;
 
 public class Server {
 	static int port = 8000;
-	static SSLServerSocket ssocket;
-	static SSLServerSocketFactory ssf;
+	//static SSLServerSocket ssocket;
+	//static SSLServerSocketFactory ssf;
+	static ServerSocket ssocket;
 	static HashMap<Socket, WebSocket> websockets = new HashMap<Socket, WebSocket>();
 
 	public static void main(String[] args){
@@ -37,7 +38,7 @@ public class Server {
 		ContentHandler ch = new ContentHandler();
 		*/
 		     
-		try {
+		/*try {
 			KeyStore ks = KeyStore.getInstance("JKS");
 			ks.load(new FileInputStream("keystore.jks"), "changeit".toCharArray());
 			
@@ -73,11 +74,11 @@ public class Server {
 		} catch (UnrecoverableKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 		try {
-			ssocket = (SSLServerSocket) ssf.createServerSocket(port);
-			//ssocket = new ServerSocket(port);
+			//ssocket = (SSLServerSocket) ssf.createServerSocket(port);
+			ssocket = new ServerSocket(port);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -85,8 +86,8 @@ public class Server {
 		
 		while(true) {
 			try{
-				SSLSocket socket = (SSLSocket) ssocket.accept();
-				//Socket socket = ssocket.accept();
+				//SSLSocket socket = (SSLSocket) ssocket.accept();
+				Socket socket = ssocket.accept();
 				PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
 				InputStream alt = socket.getInputStream();
 				InputStreamReader altReader = new InputStreamReader(alt);
@@ -165,20 +166,47 @@ class ServerBox extends Thread{
 			//To make it more like a module in case we want to add it to a function later on, we split the
 			//requests by section.
 			if(head[0].equals("GET")  && head[2].equals("HTTP/1.1")) {
-				if(head[1].equals("/") || head[1].equals("/index.html")){
+				if(head[1].equals("/websocket")){
+					//HW6: start web socket
+					if(headers.get("Connection").equals("Upgrade") && headers.get("Upgrade").equals("websocket")) {
+						//Take this key
+						String key = headers.get("Sec-WebSocket-Key");
+						//Append header to key
+						key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+						WebSocket sock = new WebSocket(socket, key);
+						//sock.start();
+						return;
+					}
+				}else if(head[1].equals("/") || head[1].equals("/index.html")){
 					processFile("index.html", "text/html", socket, writer);
+				}else if(head[1].equals("/UserPage.html")){
+					processFile("UserPage.html", "text/html", socket, writer);
+				}else if(head[1].equals("/UserPage.css")){
+					processFile("UserPage.css", "text/css", socket, writer);
+				}else if(head[1].equals("/UserPage.js")){
+					processFile("UserPage.js", "text/javascript", socket, writer);
 				}else if(head[1].equals("/feed.html")){
 					processFile("feed.html", "text/html", socket, writer);
 				}else if(head[1].equals("/Sign-in.html")){
 					processFile("Sign-in.html", "text/html", socket, writer);
 				}else if(head[1].equals("/BookFaceLogo.png")){
 					processFile("BookFaceLogo.png", "image/png", socket, writer);
+				}else if(head[1].equals("/boxconnected.png")){
+					processFile("boxconnected.png", "image/png", socket, writer);
+				}else if(head[1].equals("/connected.png")){
+					processFile("connected.png", "image/png", socket, writer);
+				}else if(head[1].equals("/SpongeBob_stock_art.png")){
+					processFile("SpongeBob_stock_art.png", "image/png", socket, writer);
 				}else if(head[1].equals("/feedstyle.css")) {
 					processFile("feedstyle.css", "text/css", socket, writer);
 				}else if(head[1].equals("/style.css")) {
 					processFile("style.css", "text/css", socket, writer);
 				}else if(head[1].equals("/landing.css")){
 					processFile("landing.css", "text/css", socket, writer);
+				}else if(head[1].equals("/landing.js")){
+					processFile("landing.js", "text/javascript", socket, writer);
+				}else if(head[1].equals("/sign.js")){
+					processFile("sign.js", "text/javascript", socket, writer);
 				}else{
 					//404 Not Found
 					print404Text("404 Not Found!", socket, writer);

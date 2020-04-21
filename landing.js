@@ -1,7 +1,7 @@
 document.getElementById("login").onclick = function () {
-       window.location.replace("Sign-in.html");
+        window.location.href = "Sign-in.html";
 };
 
-document.getElementById("regist").onclick = function () {
-        location.href = "Register.html";
+document.getElementById("register").onclick = function () {
+        window.location.href = "Register.html";
 };
