@@ -19,6 +19,7 @@ ws.onclose = function() {
 function sendMessage() {
     var type = 0;
     var message = document.getElementById("formmsg").value;
+    var id = document.getElementById("NameOfUser").innerHTML;
     var file = document.getElementById("formmedia");
     if(message.byteLength != 0 && file.files.length)
     {
@@ -31,8 +32,13 @@ function sendMessage() {
         };
         reader.readAsBinaryString(file.files[0]);
     }else if(message.byteLength != 0){
-        console.log("send: " + "0" + document.getElementById("NameOfUser").innerHTML+message);
-        socket.send("0"+document.getElementById("NameOfUser").innerHTML +message);
+        console.log("send: " + "0" + id +message);
+        var buf = new ArrayBuffer(message.byteLength + 1 + id.byteLength);
+        buf[0] = 0;
+        for(int i=1; i<id.byteLength+1; i++){
+            buf[i] = id.charCodeAt(i-1);
+        }
+        socket.send(buf);
     }else if(file.files.length)
     {
         type = 1;
