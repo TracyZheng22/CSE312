@@ -1,14 +1,14 @@
 let socket = new WebSocket('ws://' + window.location.host + '/websocket');
-ws.binaryType = "arraybuffer";
-ws.onopen = function() {
+socket.binaryType = "arraybuffer";
+socket.onopen = function() {
     console.log("Connected.")
 };
 
-ws.onmessage = function(e) {
+socket.onmessage = function(e) {
     console.log(evt.msg);
 };
 
-ws.onclose = function() {
+socket.onclose = function() {
     console.log("Connection is closed...");
 };
 
@@ -32,11 +32,15 @@ function sendMessage() {
         };
         reader.readAsBinaryString(file.files[0]);
     }else if(message.byteLength != 0){
-        console.log("send: " + "0" + id +message);
+        console.log("send: " + "0" + id.byteLength + id + message);
         var buf = new ArrayBuffer(message.byteLength + 1 + id.byteLength);
         buf[0] = 0;
-        for(int i=1; i<id.byteLength+1; i++){
-            buf[i] = id.charCodeAt(i-1);
+        buf[1] = id.byteLength;
+        for(let i=0; i<id.byteLength; i++){
+            buf[i+2] = id.charCodeAt(i);
+        }
+        for(let i=0; i<message.byteLength; i++){
+            buf[i+2+id.byteLength] = id.charCodeAt(i);
         }
         socket.send(buf);
     }else if(file.files.length)

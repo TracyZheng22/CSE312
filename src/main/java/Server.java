@@ -180,7 +180,7 @@ class ServerBox extends Thread{
 					cookies.put(temp[0], temp[1]);
 				}
 			}
-			
+		
 			//To make it more like a module in case we want to add it to a function later on, we split the
 			//requests by section.
 			if(head[0].equals("GET")  && head[2].equals("HTTP/1.1")) {
