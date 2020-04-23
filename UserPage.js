@@ -1,21 +1,16 @@
 let socket = new WebSocket('ws://' + window.location.host + '/websocket');
-if(socket.readyState != WebSocket.CLOSED){
-    console.log("Connected!");
-}else{
-    console.log("Closed!");
-}
-//Ryan note: From homework 7 for websocket reference. Please remember to correctly format input in the server
-//For security (change tags to html versions, etc.)
-//
-//socket.onmessage = renderMessages;
-//function renderMessages(message) {
-//    let text = message.data;
-//    console.log("recieved: " + text);
-//    let tag = document.createElement("p");
-//    tag.innerHTML = text;
-//    let div = document.getElementById("chatHistory");
-//    div.appendChild(tag);
-//}
+ws.binaryType = "arraybuffer";
+ws.onopen = function() {
+    console.log("Connected.")
+};
+
+ws.onmessage = function(e) {
+    console.log(evt.msg);
+};
+
+ws.onclose = function() {
+    console.log("Connection is closed...");
+};
 
 //Ryan note: since we are sending different messages over the same websocket
 //Remember to send a unique ID first for two way identification!
@@ -37,7 +32,7 @@ function sendMessage() {
         reader.readAsBinaryString(file.files[0]);
     }else if(message.byteLength != 0){
         console.log("send: " + "0" + document.getElementById("NameOfUser").innerHTML+message);
-        socket.send("0"+document.getElementById("NameOfUser").innerHTML+message);
+        socket.send("0"+document.getElementById("NameOfUser").innerHTML +message);
     }else if(file.files.length)
     {
         type = 1;
