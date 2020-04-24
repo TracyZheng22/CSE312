@@ -34,15 +34,20 @@ public class WebSocket{
 			try {
 				InputStream in = socket.getInputStream();
 				
+				boolean ignore = false;
+				
 				byte[] line = new byte[2];
 				in.read(line);
 				
 				if(line[0] == -126) {
 					//This is cause java only has signed :(
 					System.out.println("WebSocket Recieved");
-				} else {
+				} else if(line[0] == -127){
+					System.out.println("Type Identifier");
+					ignore = true;
+				}else {
 					System.out.println("FAILED!: " + line[0]);
-					//continue;
+					
 				}                           
 				
 				byte maskbit = getBit(line[1], 7); //Should be one from client
@@ -74,6 +79,11 @@ public class WebSocket{
 				//From lecture, we read 4 bytes at a time and use the mask and XOR to find the original message
 				byte[] payload = new byte[(int)payload_len];
 				in.read(payload);
+				
+				if(ignore) {
+					continue;
+				}
+				
 				if(maskbit == 1) {
 					for (int i = 0; i < (int)payload_len; i++) {
 					    payload[i] = (byte) (payload[i] ^ masking_key[i % 4]);
@@ -90,8 +100,15 @@ public class WebSocket{
 				//3=Like
 				//4=Comment
 				int type = (payload[0] & 0xFF);
-				System.out.println(type);
-				payload = Arrays.copyOfRange(payload, 1, payload.length);
+				System.out.println("Type: " + type);
+				
+				int id_len = (payload[1] & 0xFF);
+				System.out.println("id_len: " + id_len);
+				
+				String id = new String(Arrays.copyOfRange(payload, 2, id_len+2));
+				System.out.println("id: " + id);
+				
+				payload = Arrays.copyOfRange(payload, id_len+2, payload.length);
 				
 				if(type == 0) {
 					System.out.println("Post Message!");

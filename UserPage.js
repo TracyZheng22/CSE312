@@ -33,10 +33,9 @@ function sendMessage() {
         reader.readAsBinaryString(file.files[0]);
     }else if(message.length != 0){
         console.log("send: " + "0" + id.length + id + message);
-        var buf = new ArrayBuffer(message.length+ 1 + id.length);
+        var buf = new Uint8Array(message.length+ 2 + id.length);
         buf[0] = 0;
-        buf[1] = 1;
-        //buf[1] = id.length;
+        buf[1] = id.length;
         for(let i=0; i<id.length; i++){
             buf[i+2] = id.charCodeAt(i);
         }
