@@ -31,16 +31,17 @@ function sendMessage() {
             rawData = e.target.result;
         };
         reader.readAsBinaryString(file.files[0]);
-    }else if(message.byteLength != 0){
-        console.log("send: " + "0" + id.byteLength + id + message);
-        var buf = new ArrayBuffer(message.byteLength + 1 + id.byteLength);
+    }else if(message.length != 0){
+        console.log("send: " + "0" + id.length + id + message);
+        var buf = new ArrayBuffer(message.length+ 1 + id.length);
         buf[0] = 0;
-        buf[1] = id.byteLength;
-        for(let i=0; i<id.byteLength; i++){
+        buf[1] = 1;
+        //buf[1] = id.length;
+        for(let i=0; i<id.length; i++){
             buf[i+2] = id.charCodeAt(i);
         }
-        for(let i=0; i<message.byteLength; i++){
-            buf[i+2+id.byteLength] = id.charCodeAt(i);
+        for(let i=0; i<message.length; i++){
+            buf[i+2+id.length] = message.charCodeAt(i);
         }
         socket.send(buf);
     }else if(file.files.length)

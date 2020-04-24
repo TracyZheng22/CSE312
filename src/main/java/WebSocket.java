@@ -37,11 +37,12 @@ public class WebSocket{
 				byte[] line = new byte[2];
 				in.read(line);
 				
-				if(line[0] == -127) {
+				if(line[0] == -126) {
 					//This is cause java only has signed :(
 					System.out.println("WebSocket Recieved");
 				} else {
-					System.out.println(line[0]);
+					System.out.println("FAILED!: " + line[0]);
+					//continue;
 				}                           
 				
 				byte maskbit = getBit(line[1], 7); //Should be one from client
