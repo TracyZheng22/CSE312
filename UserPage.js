@@ -21,7 +21,9 @@ function sendMessage() {
     var message = document.getElementById("formmsg").value;
     var id = document.getElementById("NameOfUser").innerHTML;
     var file = document.getElementById("formmedia");
-    if(message.byteLength != 0 && file.files.length)
+    var filename = file.value.split(/(\\|\/)/g).pop();
+    console.log(message.length  + " " + file.files.length);
+    if(message.length != 0 && file.files.length==1)
     {
         type = 2;
         var reader = new FileReader();
@@ -30,11 +32,11 @@ function sendMessage() {
         {
             rawData = e.target.result;
         };
-        reader.readAsBinaryString(file.files[0]);
+        reader.readAsArrayBuffer(file.files[0]);
     }else if(message.length != 0){
-        console.log("send: " + "0" + id.length + id + message);
+        console.log("send: " + type + id.length + id + message);
         var buf = new Uint8Array(message.length+ 2 + id.length);
-        buf[0] = 0;
+        buf[0] = type;
         buf[1] = id.length;
         for(let i=0; i<id.length; i++){
             buf[i+2] = id.charCodeAt(i);
@@ -43,31 +45,38 @@ function sendMessage() {
             buf[i+2+id.length] = message.charCodeAt(i);
         }
         socket.send(buf);
-    }else if(file.files.length)
+    }else if(file.files.length==1)
     {
         type = 1;
+        console.log("send: " + type);
         var reader = new FileReader();
 
         reader.onload = function(e)
         {
-            rawData = e.target.result;
+            rawData = new Uint8Array(e.target.result);                                                                                    
+            console.log(rawData);
+            buf = new Uint8Array(rawData.length + 3 + id.length + filename.length);
+            buf[0] = type;
+            buf[1] = id.length;
+            for(let i=0; i<id.length; i++){
+                buf[i+2] = id.charCodeAt(i);
+            }
+            counter = 2+id.length;
+            buf[counter] = filename.length;
+            counter++;
+            for(let i=0; i<filename.length; i++){
+                buf[i+counter] = filename.charCodeAt(i);
+            }
+            counter += filename.length;
+            for(let i=0; i<rawData.length; i++){
+                buf[i+counter] = rawData[i];
+            }
+            socket.send(buf);
         };
 
-        reader.readAsBinaryString(file.files[0]);
+        reader.readAsArrayBuffer(file.files[0]);
     }
-    var reset = document.getElementById("formmsg");
-    reset.value = reset.defaultValue;
-    socket.send(document.getElementById("formmedia"));
- //This part might be use for show image on the page, but still yet sure to put it or not
- //socket.onmessage = function (event) { 
- //var bytes = new Uint8Array(event.data);
- //   var data = "";
- //   var len = bytes.byteLength;
- //   for (var i = 0; i < len; ++i) {
- //   	data += String.fromCharCode(bytes[i]);
- //   }
- //};
-
+    document.getElementById("cform").reset();
 }
 
 var coll = document.getElementsByClassName("collapse");

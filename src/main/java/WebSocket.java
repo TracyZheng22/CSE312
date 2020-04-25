@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,6 +19,8 @@ public class WebSocket{
 	Socket socket;
 	String key;
 	byte[] sha1;
+	//Ryan Note: Combined for String.contains()
+	static String fileTypes = ".png.jpg.jpeg.mp3.mov.mp4.m4a.m4v.mpg.mpeg.wmv.avi.flv.3gp.3gpp.3g2.3gp2.txt.docx.pdf.csv";
 	
 	public WebSocket(Socket s, String k) {
 		socket = s;
@@ -63,7 +67,7 @@ public class WebSocket{
 					//>=65536 bytes
 					line2 = new byte[8];
 					in.read(line2);
-					payload_len = processLong(line, 0);
+					payload_len = processLong(line2, 0);
 				}
 				
 				System.out.println("Payload Length: " + payload_len);
@@ -115,6 +119,31 @@ public class WebSocket{
 					//Convert payload to string
 					String message = new String(payload);
 					System.out.println("Message: " + message);
+				}else if(type == 1) {
+					System.out.println("Post File!");
+					int file_len = (payload[0] & 0xFF);
+					System.out.println("file_len: " + file_len);
+					
+					String filename = new String(Arrays.copyOfRange(payload, 1, file_len+1));
+					System.out.println("filename: " + filename);
+					
+					payload = Arrays.copyOfRange(payload, file_len+1, payload.length);
+					
+					//Ryan Notes:
+					//Check for allowed types, as front-end is not safe. (Don't use form accept and assume they follow through.)
+					//For example, they could write and upload a javascript file.
+					String filetype = filename.substring(filename.lastIndexOf("."),filename.length());
+					System.out.println("filetype: " + filetype);
+					
+					if(fileTypes.contains(filetype)) {
+						//Save the data onto the database.
+						
+						//TEMPORARY: save locally
+						File file = new File(id + filename);
+						OutputStream writer = new FileOutputStream(file);
+						writer.write(payload);
+						writer.flush();
+					}
 				}
 				
 				
