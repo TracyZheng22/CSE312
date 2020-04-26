@@ -23,16 +23,9 @@ function sendMessage() {
     var file = document.getElementById("formmedia");
     var filename = file.value.split(/(\\|\/)/g).pop();
     console.log(message.length  + " " + file.files.length);
-    if(message.length != 0 && file.files.length==1)
+    if(message.length != 0 && file.files.length>=1)
     {
-        type = 2;
-        var reader = new FileReader();
-
-        reader.onload = function(e)
-        {
-            rawData = e.target.result;
-        };
-        reader.readAsArrayBuffer(file.files[0]);
+        alert("Please send either a message or a file. (Not Both)");
     }else if(message.length != 0){
         console.log("send: " + type + id.length + id + message);
         var buf = new Uint8Array(message.length+ 2 + id.length);
@@ -45,8 +38,7 @@ function sendMessage() {
             buf[i+2+id.length] = message.charCodeAt(i);
         }
         socket.send(buf);
-    }else if(file.files.length==1)
-    {
+    }else if(file.files.length==1){
         type = 1;
         console.log("send: " + type);
         var reader = new FileReader();
@@ -78,6 +70,24 @@ function sendMessage() {
     }
     document.getElementById("cform").reset();
 }
+
+socket.onmessage = renderMessages;
+
+function renderMessages(message) {
+    var data = new Uint8Array(message.data);
+    console.log("Testing: " + data);
+    var type = data.toString();
+    console.log(type);
+    
+    
+    if ('content' in document.createElement('template')) {
+        var template = document.querySelector('#posts');
+        var tbody = document.querySelector("serverPosts");
+        var clone = template.content.cloneNode(true);
+        var name = clone.querySelector(".smallName");
+    }
+}
+
 
 var coll = document.getElementsByClassName("collapse");
 for (var i = 0; i < coll.length; i++) {

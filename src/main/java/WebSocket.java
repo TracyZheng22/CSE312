@@ -100,9 +100,9 @@ public class WebSocket{
 				//Get type (1 byte)
 				//0=Post message
 				//1=Post file
-				//2=Post message and file
-				//3=Like
-				//4=Comment
+				//2=Like
+				//3=Comment
+				//4=Request
 				int type = (payload[0] & 0xFF);
 				System.out.println("Type: " + type);
 				
@@ -118,6 +118,7 @@ public class WebSocket{
 					System.out.println("Post Message!");
 					//Convert payload to string
 					String message = new String(payload);
+					message = injectionDefense(message);
 					System.out.println("Message: " + message);
 				}else if(type == 1) {
 					System.out.println("Post File!");
@@ -146,8 +147,7 @@ public class WebSocket{
 					}
 				}
 				
-				
-				//write(payload, line2);
+				write(payload, line2);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -158,14 +158,13 @@ public class WebSocket{
 	
 	public void write(byte[] message, byte[] line2) {
 		HashMap<Socket, WebSocket> x = Server.websockets;
-		System.out.println(x.keySet());
 		for(Socket s : x.keySet()) {
 			System.out.println("Writing to Socket: " + s.getPort());
 			try {
 				OutputStream out = s.getOutputStream();
 				
 				//Set up frame with opcode
-				out.write(-127);
+				out.write(-126);
 				
 				if(message.length<126) {
 					out.write(message.length);

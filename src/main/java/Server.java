@@ -207,7 +207,7 @@ class ServerBox extends Thread{
 					processFile("feed.html", "text/html", socket, writer);
 				}else if(head[1].equals("/Sign-in.html")){
 					processFile("Sign-in.html", "text/html", socket, writer);
-				}else if(head[1].equals("/BookFaceLogo.png")){
+				}else if(head[1].equals("/BookFaceLogo.png") || head[1].equals("/favicon.ico")){
 					processFile("BookFaceLogo.png", "image/png", socket, writer);
 				}else if(head[1].equals("/boxconnected.png")){
 					processFile("boxconnected.png", "image/png", socket, writer);
