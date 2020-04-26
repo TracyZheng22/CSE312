@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
@@ -151,6 +152,7 @@ public class WebSocket{
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				Server.websockets.remove(socket); 
 				return;
 			}
 		}
@@ -158,6 +160,7 @@ public class WebSocket{
 	
 	public void write(byte[] message, byte[] line2) {
 		HashMap<Socket, WebSocket> x = Server.websockets;
+		ArrayList<Socket> cleanup = new ArrayList<Socket>();
 		for(Socket s : x.keySet()) {
 			System.out.println("Writing to Socket: " + s.getPort());
 			try {
@@ -181,8 +184,11 @@ public class WebSocket{
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
-				Server.websockets.remove(socket); 
+				cleanup.add(s);
 			}
+		}
+		for(Socket s : cleanup) {
+			Server.websockets.remove(s); 
 		}
 	}
 	
@@ -227,6 +233,12 @@ public class WebSocket{
 		return null;
 	}
 	
+	/**
+	 * Takes a raw byte array with an offset, and formats it as a long integer
+	 * @param buffer
+	 * @param offset
+	 * @return
+	 */
 	public long processLong(byte[] buffer, int offset) {
         return (((long)buffer[offset + 0] << 56) +
                 ((long)(buffer[offset + 1] & 255) << 48) +
@@ -238,6 +250,11 @@ public class WebSocket{
                 ((buffer[offset + 7] & 255) <<  0));
     }
 	
+	/**
+	 * First line of defense against injection attacks.
+	 * @param text
+	 * @return
+	 */
 	public static String injectionDefense(String text) {
 		text = text.replaceAll("&", "&amp;");
 		text = text.replaceAll("<", "&lt;");

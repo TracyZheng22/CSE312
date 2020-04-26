@@ -76,16 +76,16 @@ socket.onmessage = renderMessages;
 function renderMessages(message) {
     var data = new Uint8Array(message.data);
     console.log("Testing: " + data);
-    var type = data.toString();
-    console.log(type);
+    var msg = new TextDecoder("utf-8").decode(data);
+    console.log(msg);
     
-    
-    if ('content' in document.createElement('template')) {
-        var template = document.querySelector('#posts');
-        var tbody = document.querySelector("serverPosts");
-        var clone = template.content.cloneNode(true);
-        var name = clone.querySelector(".smallName");
-    }
+    //https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template
+    var template = document.querySelector('#posts');
+    var tbody = document.querySelector("#serverPosts");
+    var clone = template.content.cloneNode(true);
+    var name = clone.querySelector(".smallName");
+    name.textContent = msg;
+    tbody.appendChild(clone);
 }
 
 
