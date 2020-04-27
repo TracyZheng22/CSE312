@@ -21,12 +21,13 @@ public class ContentHandler {
 
     public ContentHandler(){
 
-        String URI = "mongodb+srv://cse312g20:2020sucks@cse312-g20-ynmcc.mongodb.net/test?retryWrites=true&w=majority";
+        String URI = "mongodb+srv://cse312g20:<password>@team20-fb7o8.azure.mongodb.net/admin?retryWrites=true&w=majority";  //"mongodb+srv://cse312g20:2020sucks@cse312-g20-ynmcc.mongodb.net/test?retryWrites=true&w=majority";
         MongoClientURI clientURI = new MongoClientURI(URI);
         MongoClient mongoClient = new MongoClient(clientURI);
 
-        MongoDatabase csDatabase = mongoClient.getDatabase("CSE312");
-        MongoCollection<Document> col = csDatabase.getCollection("contents");
+        //MongoDatabase csDatabase = mongoClient.getDatabase("CSE312");
+        MongoDatabase csDatabase = mongoClient.getDatabase("Team20");
+        MongoCollection<Document> col = csDatabase.getCollection("CSE312 Group");
 
         Document document = new Document("name","Vin");
 

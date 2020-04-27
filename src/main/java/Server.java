@@ -38,9 +38,9 @@ public class Server {
 		/*
 		ConfigManager.getInstance().loadConfigFile("http.json");
 		Config conf = ConfigManager.getInstance().getCurrentConfig();
-
-		ContentHandler ch = new ContentHandler();
 		*/
+		
+		ContentHandler ch = new ContentHandler();
 		     
 		/*try {
 			KeyStore ks = KeyStore.getInstance("JKS");

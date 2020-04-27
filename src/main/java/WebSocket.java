@@ -138,7 +138,7 @@ public class WebSocket{
 					System.out.println("filetype: " + filetype);
 					
 					if(fileTypes.contains(filetype)) {
-						//Save the data onto the database.
+						//TODO: Save the data onto the database.
 						
 						//TEMPORARY: save locally
 						File file = new File(id + filename);
@@ -152,6 +152,8 @@ public class WebSocket{
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				
+				//Clean up socket list.
 				Server.websockets.remove(socket); 
 				return;
 			}
