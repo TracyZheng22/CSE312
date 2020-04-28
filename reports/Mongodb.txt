@@ -16,6 +16,7 @@ The Apache License v2.0 and SSPL v1.0 allows us to use the software for any purp
 the service and running the mongodb code.
 
 The way it works is through setting up an TCP with TLS/SSL connection to the server using a cluster link (URI) through a MongoClient. 
+Here is where the connection in the code occurs: https://github.com/mongodb/mongo/blob/master/src/mongo/client/async_client.cpp. 
 This cluster contains the database where we are storing our information, secured by a username and a password for whitelisting. 
 Within the database, the storage is different from a file system. The database contains Collections, which act similarly to tables 
 in other databases, and Documents represent the actual files, or rows in other databases. These documents are stored in BSON format,
