@@ -1,8 +1,22 @@
 let socket = new WebSocket('ws://' + window.location.host + '/websocket');
 socket.binaryType = "arraybuffer";
 socket.onopen = function() {
-    console.log("Connected.")
+    console.log("Connected.");
+    sendRequest(4, 0);
 };
+
+function sendRequest(type, n){
+    console.log("Initial Request");
+    var id = document.getElementById("NameOfUser").innerHTML;
+    var buf = new Uint8Array(2 + id.length + 1);
+    buf[0] = type;
+    buf[1] = id.length;
+    for(let i=0; i<id.length; i++){
+        buf[i+2] = id.charCodeAt(i);
+    }
+    buf[2+id+length+1]=n;
+    socket.send(buf);
+}
 
 socket.onmessage = function(e) {
     console.log(evt.msg);
@@ -75,17 +89,28 @@ socket.onmessage = renderMessages;
 
 function renderMessages(message) {
     var data = new Uint8Array(message.data);
-    console.log("Testing: " + data);
-    var msg = new TextDecoder("utf-8").decode(data);
-    console.log(msg);
+    var type = data[0];
     
-    //https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template
-    var template = document.querySelector('#posts');
-    var tbody = document.querySelector("#serverPosts");
-    var clone = template.content.cloneNode(true);
-    var name = clone.querySelector(".smallName");
-    name.textContent = msg;
-    tbody.appendChild(clone);
+    if(type == 0){
+        console.log("Message Post Received!");
+        var id_length = data[1];
+        var id_bin = new Uint8Array(id_length);
+        for(let i=0; i<id_length; i++){
+            id_bin[i] = data[i+2];
+        }
+        var id =  new TextDecoder("utf-8").decode(id_bin);
+        var msg = new TextDecoder("utf-8").decode(data.subarray(id_length+2, data.length));
+        console.log(msg);
+
+        //https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template
+        var template = document.querySelector('#posts');
+        var tbody = document.querySelector("#serverPosts");
+        var clone = template.content.cloneNode(true);
+        clone.querySelector(".smallName").textContent = id;
+        clone.querySelector(".postMessage").textContent = msg;
+        
+        tbody.appendChild(clone);
+    }
 }
 
 

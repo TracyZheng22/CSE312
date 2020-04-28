@@ -7,7 +7,7 @@ import com.mongodb.client.MongoClient;
 import java.util.ArrayList;
 
 import org.bson.Document;
- import org.bson.types.ObjectId;
+import org.bson.types.ObjectId;
 
 /**
  * Accesses and handles our database.
@@ -76,5 +76,29 @@ public class ContentHandler {
             }
         }
         return ids;
+    }
+    
+    /**
+     * Finds a list of all documents for all posts made by a given user and number
+     * @param n username
+     * @return 
+     */
+    public ArrayList<Document> getPosts(String name, int start, int end){
+    	ArrayList<Document> docs = new ArrayList<Document>(end-start);
+    	MongoCursor<Document> cur = col.find().iterator();
+    	int counter = 0;
+    	while (cur.hasNext()) {
+    		Document doc = cur.tryNext();
+    		String n = doc.getString("name");
+    		int type = doc.getInteger("type", -1);
+    		
+    		if(n.equals(name) && type == 0 ) {
+		        if(start <= counter && counter < end) {  
+		            docs.add(doc);
+		        }
+		        counter++;
+    		}
+        }
+    	return docs;
     }
 }

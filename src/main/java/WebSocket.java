@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 
 /**
  * Websocket class that handles websocket connections.
@@ -103,7 +105,8 @@ public class WebSocket{
 				//1=Post file
 				//2=Like
 				//3=Comment
-				//4=Request
+				//4=Request Initial
+				//5=Request Specific
 				int type = (payload[0] & 0xFF);
 				System.out.println("Type: " + type);
 				
@@ -148,9 +151,32 @@ public class WebSocket{
 						writer.write(payload);
 						writer.flush();
 					}
+				}else if(type == 4) {
+					System.out.println("Initial Request! " + id);
+					ArrayList<Document> docs =  Server.dbHandler.getPosts(id, 0, 10);
+					for(Document doc : docs) {
+						int t = doc.getInteger("type", -1);
+						byte[] n = ((String) doc.get("name")).getBytes();
+						byte[] m = null;
+						if(t == 0) {
+							m = ((String) doc.get("message")).getBytes();
+						}else if(t == 1) {
+							m = (byte[]) doc.get("file");
+						}
+						
+						//Package the data with metadata
+						byte[] send = new byte[2+n.length+m.length];
+						send[0] = (byte) t;
+						send[1] = (byte) n.length;
+						for(int i=0; i<n.length; i++) {
+							send[i+2] = n[i];
+						}
+						for(int i=0; i<m.length; i++) {
+							send[i+2+n.length] = m[i];
+						}
+						write(send, line2);
+					}
 				}
-				
-				write(payload, line2);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
