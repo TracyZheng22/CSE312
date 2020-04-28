@@ -121,6 +121,8 @@ public class WebSocket{
 					String message = new String(payload);
 					message = injectionDefense(message);
 					System.out.println("Message: " + message);
+					
+					Server.dbHandler.write(id, type, message, 0, null);
 				}else if(type == 1) {
 					System.out.println("Post File!");
 					int file_len = (payload[0] & 0xFF);

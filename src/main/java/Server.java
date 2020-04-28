@@ -30,17 +30,15 @@ public class Server {
 	//static SSLServerSocket ssocket;
 	//static SSLServerSocketFactory ssf;
 	static ServerSocket ssocket;
+	static ContentHandler dbHandler;
 	static HashMap<Socket, WebSocket> websockets = new HashMap<Socket, WebSocket>();
 
 	public static void main(String[] args){
 		System.out.println("Server is starting on port " + port);
-
-		/*
-		ConfigManager.getInstance().loadConfigFile("http.json");
-		Config conf = ConfigManager.getInstance().getCurrentConfig();
-		*/
 		
-		ContentHandler ch = new ContentHandler();
+		//ConfigManager.getInstance().loadConfigFile("http.json");
+		//Config conf = ConfigManager.getInstance().getCurrentConfig();
+		dbHandler = new ContentHandler();
 		     
 		/*try {
 			KeyStore ks = KeyStore.getInstance("JKS");

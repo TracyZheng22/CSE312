@@ -1,42 +1,80 @@
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoClient;
+ import com.mongodb.client.MongoClients;
+ import com.mongodb.client.MongoCollection;
+ import com.mongodb.client.MongoCursor;
+ import com.mongodb.client.MongoDatabase;
 
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoCollection;
+import java.util.ArrayList;
 
 import org.bson.Document;
-import java.util.Arrays;
-import com.mongodb.Block;
+ import org.bson.types.ObjectId;
 
-import com.mongodb.client.MongoCursor;
-import static com.mongodb.client.model.Filters.*;
-import com.mongodb.client.result.DeleteResult;
-import static com.mongodb.client.model.Updates.*;
-import com.mongodb.client.result.UpdateResult;
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * Accesses and handles our database.
+ */
 public class ContentHandler {
-
+	
+	MongoCollection<Document> col;
+	
     public ContentHandler(){
-
-        String URI = "mongodb+srv://cse312g20:<password>@team20-fb7o8.azure.mongodb.net/admin?retryWrites=true&w=majority";  //"mongodb+srv://cse312g20:2020sucks@cse312-g20-ynmcc.mongodb.net/test?retryWrites=true&w=majority";
-        MongoClientURI clientURI = new MongoClientURI(URI);
-        MongoClient mongoClient = new MongoClient(clientURI);
+		MongoClient mongoClient = MongoClients.create("mongodb+srv://cse312g20:2020sucks@team20-fb7o8.azure.mongodb.net/test?retryWrites=true&w=majority");
 
         //MongoDatabase csDatabase = mongoClient.getDatabase("CSE312");
         MongoDatabase csDatabase = mongoClient.getDatabase("Team20");
-        MongoCollection<Document> col = csDatabase.getCollection("CSE312 Group");
+        col = csDatabase.getCollection("CSE312 Group");
 
-        Document document = new Document("name","Vin");
+        /*Document document = new Document("name","Vin")
+        		.append("Sex","male")
+        		.append("Age","20");
 
-        document.append("Sex","male");
-        document.append("Age","20");
+        col.insertOne(document);*/
+        
+        /*MongoCursor<Document> cur = col.find().iterator();
+        while (cur.hasNext()) {
+            Document doc = cur.tryNext();
+            
+            ObjectId id = doc.getObjectId("_id");
+            String name = doc.getString("name");
 
-        col.insertOne(document);
-
+            System.out.println("id: " + id);
+            System.out.println("name: " + name);
+        }*/
     }
-
-
+    
+    public void write(String name, int type, String msg, int likes, byte[] file) {
+    	if(type == 0) {
+    		//Post Message
+    		System.out.println("Write to Database: " + name + " " + msg);
+    		
+    		Document document = new Document("type", type)
+            		.append("name", name)
+            		.append("message", msg);
+    		
+    		col.insertOne(document);
+    	}
+    }
+    
+    /**
+     * Finds a list of all unique ids for all posts and comments made by a given user
+     * @param n susername
+     * @return 
+     */
+    public ArrayList<ObjectId> getIds(String n) {
+    	ArrayList<ObjectId> ids = new ArrayList<ObjectId>();
+    	MongoCursor<Document> cur = col.find().iterator();
+        while (cur.hasNext()) {
+            Document doc = cur.tryNext();
+            
+            ObjectId id = doc.getObjectId("_id");
+            String name = doc.getString("name");
+            
+            if(name.equals(n)) {
+            	System.out.println("id: " + id);
+                System.out.println("name: " + name);
+                
+                ids.add(id);
+            }
+        }
+        return ids;
+    }
 }
