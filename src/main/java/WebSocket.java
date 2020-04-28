@@ -177,10 +177,7 @@ public class WebSocket{
 						write(send, line2);
 					}
 				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				
+			} catch (IOException e) {				
 				//Clean up socket list.
 				Server.websockets.remove(socket); 
 				return;
