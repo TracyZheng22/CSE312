@@ -24,6 +24,8 @@ import javax.net.ssl.*;
 /**
  * Main class that beings the server on the specified port and handles incoming requests through
  * a ServerSocket.
+ * 
+ * Ryan note for phase 3: Salting and hashing for passwords?
  */
 public class Server {
 	static int port = 8000;
