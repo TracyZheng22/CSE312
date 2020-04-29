@@ -1,6 +1,6 @@
 Contributors: Ryan Xu, Vincent Feng
 
-We are using Mongodb to solve storage problems. We use their given java library to access the database.
+We are using Mongodb to solve storage and security problems. We use their given java library to access the database.
 
 The java driver can be found here: 
 https://mongodb.github.io/mongo-java-driver/ 
@@ -23,4 +23,5 @@ in other databases, and Documents represent the actual files, or rows in other d
 which is explained in more detail here: https://docs.mongodb.com/manual/reference/bson-types/. Essentially, it is similar to JSON, but 
 using binary serialization, providing more options for storage. To add files to a specific collection, we use the TCP connection
 to send a Document to the database. We can later obtain this document through the TCP connection by querying the Documents in that 
-Collection using Find(). This is how Mongodb solves our storage problems.
+Collection using Find(). This is how Mongodb solves our storage problems. Security problems are also solved by using Mongodb, since 
+SQL injections inherently do not work (as there are no SQL formatted method of querying).
