@@ -198,7 +198,7 @@ public class WebSocket{
 			for(int i=0; i<n.length; i++) {
 				send[i+2] = n[i];
 			}
-			send[n.length+3]=(byte) fn.length;
+			send[n.length+2]=(byte) fn.length;
 			for(int i=0; i<fn.length; i++) {
 				send[i+n.length+3] = fn[i];
 			}
