@@ -152,10 +152,10 @@ public class WebSocket{
 						write(type, filename.getBytes(), payload, line2);
 						
 						//TEMPORARY: save locally
-						File file = new File(id + filename);
+						/*File file = new File(id + filename);
 						OutputStream writer = new FileOutputStream(file);
 						writer.write(payload);
-						writer.flush();
+						writer.flush();*/
 					}
 				}else if(type == 4) {
 					System.out.println("Initial Request! " + id);
