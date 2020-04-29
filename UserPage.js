@@ -59,8 +59,8 @@ function sendMessage() {
         
         var filesize = ((file.files[0].size/1024)/1024).toFixed(4);
         
-        if(filesize > 2){
-            alert("No files greater than 2 MB! (This is to preserve space)");
+        if(filesize > 5){
+            alert("No files greater than 5 MB! (This is to preserve space)");
             document.getElementById("cform").reset();
             return;
         }
@@ -143,19 +143,17 @@ function renderMessages(message) {
         clone.querySelector(".smallName").textContent = id;
         
         var filext = filename.substr(filename.lastIndexOf('.'), filename.length);
-        if(filext.includes(".jpg")){
-            dataImage = String.fromCharCode.apply(null, dataFile);
-            clone.querySelector(".mediaContent").innerHTML = "<img src=data:image/jpg;base64," + btoa(dataImage) + ">";
-        }else if(filext.includes(".png")){
-            dataImage = String.fromCharCode.apply(null, dataFile);
-            clone.querySelector(".mediaContent").innerHTML = "<img src=data:image/png;base64," + btoa(dataImage) + ">";
-        }else if(filext.includes(".gif")){
-            dataImage = String.fromCharCode.apply(null, dataFile);
-            clone.querySelector(".mediaContent").innerHTML = "<img src=data:image/gif;base64," + btoa(dataImage) + ">";
+        var datastr = '';
+        for (var i = 0; i < dataFile.length; i++) {
+            datastr += String.fromCharCode(dataFile[i]);
+        }
+        var mime = extToMimes[filext];
+        console.log("type: " + mime);
+        
+        if(mime.includes("image/")){
+            clone.querySelector(".mediaContent").innerHTML = "<img src=data:"+mime+";base64," + btoa(datastr) + ">";
         }else{
-            var reader = new FileReader();
-            var encoded = reader.readAsDataURL(dataFile);
-            console.log("encoded: " + encoded);
+            clone.querySelector(".mediaContent").innerHTML = "<iframe width='100%' height='100%' src=data:"+mime+";base64," + btoa(datastr) + ">" + filename + "</iframe>";
         }
         
         tbody.appendChild(clone);
@@ -186,6 +184,37 @@ function friendsList() {
         open = false;
     }
 }
+
+var extToMimes = {
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.xml': 'text/xml',
+    '.gif': 'image/gif',
+    '.txt': 'text/plain',
+    '.doc': 'application/msword',
+    '.pdf': 'application/pdf',
+    '.xls': 'application/vnd.ms-excel',
+    '.ppt': 'application/vnd.ms-powerpoint',
+    '.zip': 'application/zip',
+    '.mid': 'audio/midi',
+    '.midi': 'audio/midi',
+    '.kar': 'audio/midi',
+    '.mp3': 'audio/mpeg',
+    '.3gpp': 'video/3gpp',
+    '.3gp': 'video/3gpp',
+    '.mpg': 'video/mpeg',
+    '.mpeg': 'video/mpeg',
+    '.mov': 'video/quicktime',
+    '.flv': 'video/x-flv',
+    '.mng': 'video/x-mng',
+    '.wmv': 'video/x-ms-wmv',
+    '.avi': 'video/x-msvideo',
+    '.m4v': 'video/mp4',
+    '.mp4': 'video/mp4'
+};
+
+
 
 /* THROWS ERROR: FIX
 $('.nav ul li').click(function(){

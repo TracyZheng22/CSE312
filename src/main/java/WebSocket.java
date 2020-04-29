@@ -24,7 +24,7 @@ public class WebSocket{
 	String key;
 	byte[] sha1;
 	//Ryan Note: Combined for String.contains()
-	static String fileTypes = ".png.jpg.jpeg.gif.mp3.mov.mp4.m4a.m4v.mpg.mpeg.wmv.avi.flv.3gp.3gpp.3g2.3gp2.txt.docx.pdf.csv";
+	static String fileTypes = ".png.jpg.jpeg.gif.mid.midi.kar.mp3.mov.mp4.m4v.mpg.mpeg.wmv.avi.flv.3gp.3gpp.txt.xml.xls.ppt.doc.pdf.csv.zip";
 	
 	public WebSocket(Socket s, String k) {
 		socket = s;
