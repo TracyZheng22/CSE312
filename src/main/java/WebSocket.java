@@ -13,6 +13,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.bson.types.Binary;
 
 /**
  * Websocket class that handles websocket connections.
@@ -110,7 +111,7 @@ public class WebSocket{
 				int type = (payload[0] & 0xFF);
 				System.out.println("Type: " + type);
 				
-				int id_len = (payload[1] & 0xFF);
+				int id_len = payload[1];
 				System.out.println("id_len: " + id_len);
 				
 				String id = new String(Arrays.copyOfRange(payload, 2, id_len+2));
@@ -125,7 +126,10 @@ public class WebSocket{
 					message = injectionDefense(message);
 					System.out.println("Message: " + message);
 					
-					Server.dbHandler.write(id, type, message, 0, null);
+					Server.dbHandler.write(id, type, message, 0, null, line2, null);
+					
+					//Send back to sender for immediate view
+					write(type, id.getBytes(), message.getBytes(), line2);
 				}else if(type == 1) {
 					System.out.println("Post File!");
 					int file_len = (payload[0] & 0xFF);
@@ -139,11 +143,13 @@ public class WebSocket{
 					//Ryan Notes:
 					//Check for allowed types, as front-end is not safe. (Don't use form accept and assume they follow through.)
 					//For example, they could write and upload a javascript file.
-					String filetype = filename.substring(filename.lastIndexOf("."),filename.length());
+					String filetype = filename.substring(filename.lastIndexOf("."), filename.length());
 					System.out.println("filetype: " + filetype);
 					
 					if(fileTypes.contains(filetype)) {
-						//TODO: Save the data onto the database.
+						//Save the data onto the database.
+						Server.dbHandler.write(id, 1, null, 0, payload, line2, filename);
+						write(type, filename.getBytes(), payload, line2);
 						
 						//TEMPORARY: save locally
 						File file = new File(id + filename);
@@ -161,20 +167,16 @@ public class WebSocket{
 						if(t == 0) {
 							m = ((String) doc.get("message")).getBytes();
 						}else if(t == 1) {
-							m = (byte[]) doc.get("file");
+							n = ((String) doc.get("filename")).getBytes();
+							Binary b = (Binary) doc.get("file");
+							m = b.getData();
 						}
-						
-						//Package the data with metadata
-						byte[] send = new byte[2+n.length+m.length];
-						send[0] = (byte) t;
-						send[1] = (byte) n.length;
-						for(int i=0; i<n.length; i++) {
-							send[i+2] = n[i];
+						Binary temp = (Binary) doc.get("line2");
+						byte[] l2 = null;
+						if(temp != null) {
+							l2 = temp.getData();
 						}
-						for(int i=0; i<m.length; i++) {
-							send[i+2+n.length] = m[i];
-						}
-						write(send, line2);
+						write(t,n,m,l2);
 					}
 				}
 			} catch (IOException e) {				
@@ -183,6 +185,22 @@ public class WebSocket{
 				return;
 			}
 		}
+	}
+	
+	public void write(int t, byte[] n, byte[] m, byte[] line2) {
+		//Package the data with metadata
+		byte[] send = new byte[2+n.length+m.length];
+		send[0] = (byte) t;
+		send[1] = (byte) n.length;
+		for(int i=0; i<n.length; i++) {
+			send[i+2] = n[i];
+		}
+		for(int i=0; i<m.length; i++) {
+			send[i+2+n.length] = m[i];
+		}
+		long x = (2+n.length+m.length);
+		
+		write(send, line2);
 	}
 	
 	public void write(byte[] message, byte[] line2) {
@@ -198,10 +216,10 @@ public class WebSocket{
 				
 				if(message.length<126) {
 					out.write(message.length);
-				}else if (message.length == 126) {
+				}else if (message.length < 65536) {
 					out.write(126);
 					out.write(line2);
-				}else if (message.length == 127) {
+				}else if (message.length >= 65536) {
 					out.write(127);
 					out.write(line2);
 				}

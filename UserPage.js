@@ -56,7 +56,15 @@ function sendMessage() {
         type = 1;
         console.log("send: " + type);
         var reader = new FileReader();
-
+        
+        /*var filesize = ((file.files[0].size/1024)/1024).toFixed(4);
+        
+        if(filesize > 15){
+            alert("No files greater than 15 MB!");
+            document.getElementById("cform").reset();
+            return;
+        }*/
+        
         reader.onload = function(e)
         {
             rawData = new Uint8Array(e.target.result);                                                                                    
@@ -110,6 +118,10 @@ function renderMessages(message) {
         clone.querySelector(".postMessage").textContent = msg;
         
         tbody.appendChild(clone);
+    }else if(type == 1){
+        console.log("File Post Received!");
+        var id =  new TextDecoder("utf-8").decode(data);
+        console.log(id);
     }
 }
 
