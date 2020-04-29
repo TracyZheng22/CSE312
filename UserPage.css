@@ -124,7 +124,8 @@ h2 {
 }
 
 .mediaContent {
-    background-color: white;
+    margin-left: 60px;
+    overflow: hidden;
     /* Change width and height in javascript if possible.*/
 }
 

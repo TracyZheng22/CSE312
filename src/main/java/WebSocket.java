@@ -24,7 +24,7 @@ public class WebSocket{
 	String key;
 	byte[] sha1;
 	//Ryan Note: Combined for String.contains()
-	static String fileTypes = ".png.jpg.jpeg.mp3.mov.mp4.m4a.m4v.mpg.mpeg.wmv.avi.flv.3gp.3gpp.3g2.3gp2.txt.docx.pdf.csv";
+	static String fileTypes = ".png.jpg.jpeg.gif.mp3.mov.mp4.m4a.m4v.mpg.mpeg.wmv.avi.flv.3gp.3gpp.3g2.3gp2.txt.docx.pdf.csv";
 	
 	public WebSocket(Socket s, String k) {
 		socket = s;
@@ -52,7 +52,6 @@ public class WebSocket{
 					System.out.println("WebSocket Recieved");
 				} else if(line[0] == -127){
 					System.out.println("Type Identifier");
-					ignore = true;
 				}else {
 					System.out.println("FAILED!: " + line[0]);
 				}                           
@@ -148,7 +147,7 @@ public class WebSocket{
 					if(fileTypes.contains(filetype)) {
 						//Save the data onto the database.
 						Server.dbHandler.write(id, 1, null, 0, payload, line2, filename);
-						write(type, filename.getBytes(), payload, line2, null);
+						write(type, id.getBytes(), payload, line2, filename.getBytes());
 						
 						//TEMPORARY: save locally
 						/*File file = new File(id + filename);
@@ -191,7 +190,7 @@ public class WebSocket{
 	public void write(int t, byte[] n, byte[] m, byte[] line2, byte[] fn) {
 		//Package the data with metadata
 		byte[] send = null;
-		if(fn.length != 0) {
+		if(fn != null && fn.length != 0) {
 			send = new byte[3+n.length+fn.length+m.length];
 			send[0] = (byte) t;
 			send[1] = (byte) n.length;

@@ -57,13 +57,13 @@ function sendMessage() {
         console.log("send: " + type);
         var reader = new FileReader();
         
-        /*var filesize = ((file.files[0].size/1024)/1024).toFixed(4);
+        var filesize = ((file.files[0].size/1024)/1024).toFixed(4);
         
-        if(filesize > 15){
-            alert("No files greater than 15 MB!");
+        if(filesize > 2){
+            alert("No files greater than 2 MB! (This is to preserve space)");
             document.getElementById("cform").reset();
             return;
-        }*/
+        }
         
         reader.onload = function(e)
         {
@@ -135,17 +135,27 @@ function renderMessages(message) {
             file_bin[i] = data[i+3+id_length];
         }
         var filename = new TextDecoder("utf-8").decode(file_bin);
-        localStorage.setItem(filename, data.subarray(file_len+id_length+3, data.length));
-        console.log("Saved: " + filename);
-        var dataImage = localStorage.getItem(filename);
+        var dataFile = data.subarray(file_len+id_length+3, data.length);
         
         var template = document.querySelector('#multiposts');
         var tbody = document.querySelector("#serverPosts");
         var clone = template.content.cloneNode(true);
         clone.querySelector(".smallName").textContent = id;
         
-        if(filename.substr(filename.lastIndexOf('.'), filename.length).includes(".jpg")){
-            clone.querySelector(".mediaContent").innerHTML = "<img src=data:image/jpg;" + btoa(dataImage) + ">";
+        var filext = filename.substr(filename.lastIndexOf('.'), filename.length);
+        if(filext.includes(".jpg")){
+            dataImage = String.fromCharCode.apply(null, dataFile);
+            clone.querySelector(".mediaContent").innerHTML = "<img src=data:image/jpg;base64," + btoa(dataImage) + ">";
+        }else if(filext.includes(".png")){
+            dataImage = String.fromCharCode.apply(null, dataFile);
+            clone.querySelector(".mediaContent").innerHTML = "<img src=data:image/png;base64," + btoa(dataImage) + ">";
+        }else if(filext.includes(".gif")){
+            dataImage = String.fromCharCode.apply(null, dataFile);
+            clone.querySelector(".mediaContent").innerHTML = "<img src=data:image/gif;base64," + btoa(dataImage) + ">";
+        }else{
+            var reader = new FileReader();
+            var encoded = reader.readAsDataURL(dataFile);
+            console.log("encoded: " + encoded);
         }
         
         tbody.appendChild(clone);
