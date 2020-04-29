@@ -55,7 +55,7 @@ public class WebSocket{
 					ignore = true;
 				}else {
 					System.out.println("FAILED!: " + line[0]);
-					
+					ignore=true;
 				}                           
 				
 				byte maskbit = getBit(line[1], 7); //Should be one from client
@@ -129,7 +129,7 @@ public class WebSocket{
 					Server.dbHandler.write(id, type, message, 0, null, line2, null);
 					
 					//Send back to sender for immediate view
-					write(type, id.getBytes(), message.getBytes(), line2);
+					write(type, id.getBytes(), message.getBytes(), line2, null);
 				}else if(type == 1) {
 					System.out.println("Post File!");
 					int file_len = (payload[0] & 0xFF);
@@ -149,7 +149,7 @@ public class WebSocket{
 					if(fileTypes.contains(filetype)) {
 						//Save the data onto the database.
 						Server.dbHandler.write(id, 1, null, 0, payload, line2, filename);
-						write(type, filename.getBytes(), payload, line2);
+						write(type, filename.getBytes(), payload, line2, null);
 						
 						//TEMPORARY: save locally
 						/*File file = new File(id + filename);
@@ -161,13 +161,15 @@ public class WebSocket{
 					System.out.println("Initial Request! " + id);
 					ArrayList<Document> docs =  Server.dbHandler.getPosts(id, 0, 10);
 					for(Document doc : docs) {
-						int t = doc.getInteger("type", -1);
+						int t = doc.getInteger("type");
 						byte[] n = ((String) doc.get("name")).getBytes();
+						byte[] fn = null;
 						byte[] m = null;
 						if(t == 0) {
 							m = ((String) doc.get("message")).getBytes();
+							System.out.println("Sending Message " + m);
 						}else if(t == 1) {
-							n = ((String) doc.get("filename")).getBytes();
+							fn = ((String) doc.get("filename")).getBytes();
 							Binary b = (Binary) doc.get("file");
 							m = b.getData();
 						}
@@ -176,7 +178,7 @@ public class WebSocket{
 						if(temp != null) {
 							l2 = temp.getData();
 						}
-						write(t,n,m,l2);
+						write(t,n,m,l2,fn);
 					}
 				}
 			} catch (IOException e) {				
@@ -187,20 +189,36 @@ public class WebSocket{
 		}
 	}
 	
-	public void write(int t, byte[] n, byte[] m, byte[] line2) {
+	public void write(int t, byte[] n, byte[] m, byte[] line2, byte[] fn) {
 		//Package the data with metadata
-		byte[] send = new byte[2+n.length+m.length];
-		send[0] = (byte) t;
-		send[1] = (byte) n.length;
-		for(int i=0; i<n.length; i++) {
-			send[i+2] = n[i];
+		byte[] send = null;
+		if(fn.length != 0) {
+			send = new byte[3+n.length+fn.length+m.length];
+			send[0] = (byte) t;
+			send[1] = (byte) n.length;
+			for(int i=0; i<n.length; i++) {
+				send[i+2] = n[i];
+			}
+			send[n.length+3]=(byte) fn.length;
+			for(int i=0; i<fn.length; i++) {
+				send[i+2] = fn[i];
+			}
+			for(int i=0; i<m.length; i++) {
+				send[i+2+n.length] = m[i];
+			}
+		}else {
+			send = new byte[2+n.length+m.length];
+			send[0] = (byte) t;
+			send[1] = (byte) n.length;
+			for(int i=0; i<n.length; i++) {
+				send[i+2] = n[i];
+			}
+			for(int i=0; i<m.length; i++) {
+				send[i+2+n.length] = m[i];
+			}
 		}
-		for(int i=0; i<m.length; i++) {
-			send[i+2+n.length] = m[i];
-		}
-		long x = (2+n.length+m.length);
 		
-		write(send, line2);
+		write(socket, send, line2);
 	}
 	
 	public void write(byte[] message, byte[] line2) {
@@ -234,6 +252,33 @@ public class WebSocket{
 		}
 		for(Socket s : cleanup) {
 			Server.websockets.remove(s); 
+		}
+	}
+	
+	public void write(Socket socket, byte[] message, byte[] line2) {
+		System.out.println("Writing to Socket: " + socket.getPort());
+		try {
+			OutputStream out = socket.getOutputStream();
+			
+			//Set up frame with opcode
+			out.write(-126);
+			
+			if(message.length<126) {
+				out.write(message.length);
+			}else if (message.length < 65536) {
+				out.write(126);
+				out.write(line2);
+			}else if (message.length >= 65536) {
+				out.write(127);
+				out.write(line2);
+			}
+			
+			//Send message
+			out.write(message);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			Server.websockets.remove(socket);
 		}
 	}
 	

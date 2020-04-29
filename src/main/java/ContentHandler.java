@@ -107,6 +107,7 @@ public class ContentHandler {
     		
     		if(n.equals(name)) {
 		        if(start <= counter && counter < end) {  
+		        	System.out.println(doc.getInteger("type"));
 		            docs.add(doc);
 		        }
 		        counter++;

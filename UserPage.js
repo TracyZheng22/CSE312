@@ -98,6 +98,7 @@ socket.onmessage = renderMessages;
 function renderMessages(message) {
     var data = new Uint8Array(message.data);
     var type = data[0];
+    console.log("Received type " + type);
     
     if(type == 0){
         console.log("Message Post Received!");
@@ -120,11 +121,33 @@ function renderMessages(message) {
         tbody.appendChild(clone);
     }else if(type == 1){
         console.log("File Post Received!");
-        var id =  new TextDecoder("utf-8").decode(data);
-        console.log(id);
+        var id_length = data[1];
+        var id_bin = new Uint8Array(id_length);
+        for(let i=0; i<id_length; i++){
+            id_bin[i] = data[i+2];
+        }
+        var file_len = data[id_length+3];
+        var file_bin = new Uint8Array(id_length);
+        for(let i=0; i<file_len; i++){
+            file_bin[i] = data[i+3+id_length];
+        }
+        var filename = new TextDecoder("utf-8").decode(file_bin);
+        localStorage.setItem(filename, data.subarray(file_len+id_length+3, data.length));
+        console.log("Saved: " + filename);
+        var dataImage = localStorage.getItem(filename);
+        
+        var template = document.querySelector('#multiposts');
+        var tbody = document.querySelector("#serverPosts");
+        var clone = template.content.cloneNode(true);
+        clone.querySelector(".smallName").textContent = id;
+        
+        if(filename.substr(filename.lastIndexOf('.'), filename.length).includes(".jpg")){
+            clone.querySelector(".mediaContent").textContent = "<img src=data:image/jpg;" + dataImage;
+        }
+        
+        tbody.appendChild(clone);
     }
 }
-
 
 var coll = document.getElementsByClassName("collapse");
 for (var i = 0; i < coll.length; i++) {
