@@ -126,8 +126,10 @@ function renderMessages(message) {
         for(let i=0; i<id_length; i++){
             id_bin[i] = data[i+2];
         }
+        var id =  new TextDecoder("utf-8").decode(id_bin);
         var file_len = data[id_length+3];
-        var file_bin = new Uint8Array(id_length);
+        console.log("file_len " + file_len);
+        var file_bin = new Uint8Array(file_len);
         for(let i=0; i<file_len; i++){
             file_bin[i] = data[i+3+id_length];
         }
@@ -142,7 +144,7 @@ function renderMessages(message) {
         clone.querySelector(".smallName").textContent = id;
         
         if(filename.substr(filename.lastIndexOf('.'), filename.length).includes(".jpg")){
-            clone.querySelector(".mediaContent").textContent = "<img src=data:image/jpg;" + dataImage;
+            clone.querySelector(".mediaContent").textContent = "<img src=data:image/jpg;" + btoa(dataImage) + ">";
         }
         
         tbody.appendChild(clone);

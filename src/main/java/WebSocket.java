@@ -55,7 +55,6 @@ public class WebSocket{
 					ignore = true;
 				}else {
 					System.out.println("FAILED!: " + line[0]);
-					ignore=true;
 				}                           
 				
 				byte maskbit = getBit(line[1], 7); //Should be one from client
@@ -201,10 +200,10 @@ public class WebSocket{
 			}
 			send[n.length+3]=(byte) fn.length;
 			for(int i=0; i<fn.length; i++) {
-				send[i+2] = fn[i];
+				send[i+n.length+3] = fn[i];
 			}
 			for(int i=0; i<m.length; i++) {
-				send[i+2+n.length] = m[i];
+				send[i+3+fn.length+n.length] = m[i];
 			}
 		}else {
 			send = new byte[2+n.length+m.length];
