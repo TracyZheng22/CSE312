@@ -95,6 +95,8 @@ public class ContentHandler {
     /**
      * Finds a list of all documents for all posts made by a given user and number
      * @param n username
+     * @param start
+     * @param end
      * @return 
      */
     public ArrayList<Document> getPosts(String name, int start, int end){
@@ -112,6 +114,30 @@ public class ContentHandler {
 		        }
 		        counter++;
     		}
+        }
+    	return docs;
+    }
+    
+    /**
+     * Finds a list of all documents for all posts given an interval
+     * 
+     * @param start
+     * @param end
+     * @return
+     */
+    public ArrayList<Document> getPosts(int start, int end){
+    	ArrayList<Document> docs = new ArrayList<Document>(end-start);
+    	MongoCursor<Document> cur = col.find().iterator();
+    	int counter = 0;
+    	while (cur.hasNext()) {
+    		Document doc = cur.tryNext();
+    		String n = doc.getString("name");
+    		
+	        if(start <= counter && counter < end) {  
+	        	System.out.println(doc.getInteger("type"));
+	            docs.add(doc);
+	        }
+	        counter++;
         }
     	return docs;
     }

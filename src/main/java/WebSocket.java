@@ -157,7 +157,7 @@ public class WebSocket{
 					}
 				}else if(type == 4) {
 					System.out.println("Initial Request! " + id);
-					ArrayList<Document> docs =  Server.dbHandler.getPosts(id, 0, 10);
+					ArrayList<Document> docs =  Server.dbHandler.getPosts(0, 10);
 					for(Document doc : docs) {
 						int t = doc.getInteger("type");
 						byte[] n = ((String) doc.get("name")).getBytes();
@@ -216,7 +216,7 @@ public class WebSocket{
 			}
 		}
 		
-		write(socket, send, line2);
+		write(send, line2);
 	}
 	
 	public void write(byte[] message, byte[] line2) {
@@ -250,33 +250,6 @@ public class WebSocket{
 		}
 		for(Socket s : cleanup) {
 			Server.websockets.remove(s); 
-		}
-	}
-	
-	public void write(Socket socket, byte[] message, byte[] line2) {
-		System.out.println("Writing to Socket: " + socket.getPort());
-		try {
-			OutputStream out = socket.getOutputStream();
-			
-			//Set up frame with opcode
-			out.write(-126);
-			
-			if(message.length<126) {
-				out.write(message.length);
-			}else if (message.length < 65536) {
-				out.write(126);
-				out.write(line2);
-			}else if (message.length >= 65536) {
-				out.write(127);
-				out.write(line2);
-			}
-			
-			//Send message
-			out.write(message);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-			Server.websockets.remove(socket);
 		}
 	}
 	
