@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 
-FROM maven:4.0.0
+FROM maven:3.6.3-jdk-8
 RUN mvn install
 
 RUN apt-get update
