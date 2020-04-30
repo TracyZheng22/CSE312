@@ -1,3 +1,21 @@
+/*
+
+
+
+
+
+
+    Padding, ignore
+
+
+
+
+
+
+
+
+*/
+
 let socket = new WebSocket('ws://' + window.location.host + '/websocket');
 socket.binaryType = "arraybuffer";
 socket.onopen = function() {
