@@ -1,31 +1,17 @@
-var extToMimes = {
-    '.jpeg': 'image/jpeg',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.xml': 'text/xml',
-    '.gif': 'image/gif',
-    '.txt': 'text/plain',
-    '.doc': 'application/msword',
-    '.pdf': 'application/pdf',
-    '.xls': 'application/vnd.ms-excel',
-    '.ppt': 'application/vnd.ms-powerpoint',
-    '.zip': 'application/zip',
-    '.mid': 'audio/midi',
-    '.midi': 'audio/midi',
-    '.kar': 'audio/midi',
-    '.mp3': 'audio/mpeg',
-    '.3gpp': 'video/3gpp',
-    '.3gp': 'video/3gpp',
-    '.mpg': 'video/mpeg',
-    '.mpeg': 'video/mpeg',
-    '.mov': 'video/quicktime',
-    '.flv': 'video/x-flv',
-    '.mng': 'video/x-mng',
-    '.wmv': 'video/x-ms-wmv',
-    '.avi': 'video/x-msvideo',
-    '.m4v': 'video/mp4',
-    '.mp4': 'video/mp4'
-};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 let socket = new WebSocket('ws://' + window.location.host + '/websocket');
 socket.binaryType = "arraybuffer";
@@ -317,6 +303,36 @@ function friendsList() {
         open = false;
     }
 }
+
+
+var extToMimes = {
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.xml': 'text/xml',
+    '.gif': 'image/gif',
+    '.txt': 'text/plain',
+    '.doc': 'application/msword',
+    '.pdf': 'application/pdf',
+    '.xls': 'application/vnd.ms-excel',
+    '.ppt': 'application/vnd.ms-powerpoint',
+    '.zip': 'application/zip',
+    '.mid': 'audio/midi',
+    '.midi': 'audio/midi',
+    '.kar': 'audio/midi',
+    '.mp3': 'audio/mpeg',
+    '.3gpp': 'video/3gpp',
+    '.3gp': 'video/3gpp',
+    '.mpg': 'video/mpeg',
+    '.mpeg': 'video/mpeg',
+    '.mov': 'video/quicktime',
+    '.flv': 'video/x-flv',
+    '.mng': 'video/x-mng',
+    '.wmv': 'video/x-ms-wmv',
+    '.avi': 'video/x-msvideo',
+    '.m4v': 'video/mp4',
+    '.mp4': 'video/mp4'
+};
 
 
 /* THROWS ERROR: FIX
