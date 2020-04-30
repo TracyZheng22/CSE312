@@ -43,17 +43,17 @@
             <div class="ProfileMain">
                 <div class="ProfilePosts">
                     <h2>User Posts</h2>
-                    <button type="button" class="collapse">Create New Post</button>
+                    <button type="button" class="collapse" onclick="collapse(this)">Create New Post</button>
                     <div class="postDiv">
                         <br>
                         <form onsubmit="sendMessage(); return false;" id="cform">
-                            <label for="formmsg">Message: </label>
+                            <label for="fmsg">Message: </label>
                             <br>
-                            <input id="formmsg" type="text" name="msg">
+                            <input id="fmsg" type="text" name="msg">
                             <br>
-                            <label for="formmedia"></label>
+                            <label for="fmedia"></label>
                             <br>
-                            <input id="formmedia" type="file" name="media">
+                            <input id="fmedia" type="file" name="media">
                             <br>
                             <br>
                             <input type="submit" value="Submit">
@@ -67,15 +67,12 @@
                             <div class="commentBlock">
                                 <div class="profileInfo">
                                     <img class="smallProfile" src="BookFaceLogo.png">
-                                    <p class="name"></p>
+                                    <p class="smallName"></p>
                                 </div>
                                 <p class = "comment"></p>
                                 <div class="reactionContainer">
-                                  <form>
-                                    <input type="hidden" id="readCounterCNum" value=""/>
-                                  </form>
-                                    <p class="reactions"><b id ="LikeCountC"></b></p>
-                                    <button class="likeButton" onclick="like()">Like</button>
+                                    <p class="reactions"></p>
+                                    <button class="likeButton" onclick="like(this.id)">Like</button>
                                 </div>
                             </div>
                         </div>
@@ -93,6 +90,15 @@
                                 <p class="reactions"></p>
                                 <button class="likeButton" onclick="like(this.id)">Like</button>
                             </div>
+                            <button type="button" class="collapse" onclick="collapse(this)">Comment</button>
+                            <div class="postDiv">
+                                <br>
+                                <form onsubmit="sendComment(this); return false;" class="comform">
+                                    <input class="formmsg" type="text" name="msg">
+                                    <input type="submit" value="Submit">
+                                </form>
+                                <br>
+                            </div>
                             <div class="commentholder"></div>
                         </div>
                     </template>
@@ -107,6 +113,15 @@
                             <div class="reactionContainer">
                                 <p class="reactions"></p>
                                 <button class="likeButton" onclick="likePost()">Like</button>
+                            </div>
+                            <button type="button" class="collapse" onclick="collapse(this)">Comment</button>
+                            <div class="postDiv">
+                                <br>
+                                <form onsubmit="sendComment(this); return false;" class="comform">
+                                    <input class="formmsg" type="text" name="msg">
+                                    <input type="submit" value="Submit">
+                                </form>
+                                <br>
                             </div>
                             <div class="commentholder"></div>
                         </div>

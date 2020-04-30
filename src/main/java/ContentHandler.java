@@ -6,8 +6,10 @@ import com.mongodb.client.MongoClient;
 import static com.mongodb.client.model.Filters.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.bson.Document;
+import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 
 /**
@@ -55,8 +57,6 @@ public class ContentHandler {
             		.append("message", msg)
             		.append("likes", likes)
     				.append("line2", line2);
-    		
-    		col.insertOne(document);
     	}else if(type == 1) {
     		//Post File
     		System.out.println("Write to Database: " + name);
@@ -67,9 +67,17 @@ public class ContentHandler {
             		.append("file", file)
             		.append("likes", likes)
     				.append("line2", line2);
+    	}else if(type == 3) {
+    		System.out.println("Write to Database: " + name + " " + msg);
     		
-    		col.insertOne(document);
+    		document = new Document("type", type)
+    		.append("name", name)
+    		.append("message", msg)
+    		.append("likes", likes)
+    		.append("file", file)
+			.append("line2", line2);
     	}
+    	col.insertOne(document);
     	return document;
     }
     
@@ -107,6 +115,8 @@ public class ContentHandler {
     	int likes = doc.getInteger("likes");
     	
     	col.updateOne(eq("_id", objid), new Document("$set", new Document("likes", likes+1)));
+    	
+    	doc = col.find(eq("_id", objid)).first();
     	return doc.getInteger("likes");
     }
     
@@ -150,13 +160,38 @@ public class ContentHandler {
     	while (cur.hasNext()) {
     		Document doc = cur.tryNext();
     		String n = doc.getString("name");
+    		Binary x = (Binary) doc.get("file");
+    		byte[] _id = null;
+    		if(x!=null) {
+    			_id = x.getData();
+    		}
+    		int type = doc.getInteger("type");
     		
-	        if(start <= counter && counter < end) {  
+	        if((type == 3 && arrayId(docs, _id)) || ((type == 0 || type == 1) && start <= counter && counter < end)) {  
 	        	System.out.println(doc.getInteger("type"));
 	            docs.add(doc);
 	        }
-	        counter++;
+	        if(type==0 || type==1) {
+	        	counter++;
+	        }
         }
     	return docs;
     }
+
+    /**
+     * Finds if it a document is a comment to a post. This works because there cannot be a post after a comment.
+     * 
+     * @param docs
+     * @param _id
+     * @return
+     */
+	private boolean arrayId(ArrayList<Document> docs, byte[] _id) {
+		for(Document doc : docs) {
+			byte[] od = ((ObjectId) doc.getObjectId("_id")).toByteArray();
+			if(Arrays.equals(od, _id)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

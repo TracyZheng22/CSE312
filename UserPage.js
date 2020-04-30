@@ -37,9 +37,9 @@ socket.onclose = function() {
 //roughly handle upload concurrency.
 function sendMessage() {
     var type = 0;
-    var message = document.getElementById("formmsg").value;
+    var message = document.getElementById("fmsg").value;
     var id = document.getElementById("NameOfUser").innerHTML;
-    var file = document.getElementById("formmedia");
+    var file = document.getElementById("fmedia");
     var filename = file.value.split(/(\\|\/)/g).pop();
     console.log(message.length  + " " + file.files.length);
     if(message.length != 0 && file.files.length>=1)
@@ -53,7 +53,7 @@ function sendMessage() {
         for(let i=0; i<id.length; i++){
             buf[i+2] = id.charCodeAt(i);
         }
-        buf[i+2+id.length+12] = 0;
+        buf[2+id.length+12] = 0;
         for(let i=0; i<message.length; i++){
             buf[i+2+id.length+13] = message.charCodeAt(i);
         }
@@ -101,6 +101,37 @@ function sendMessage() {
     document.getElementById("cform").reset();
 }
 
+function sendComment(curr){
+    var _idcom = curr.id;
+    var type = 3;
+    var objstr = _idcom.substr(0, _idcom.length-3);
+    //Note: change all ids in phase 3 to actual username
+    var id = document.getElementById("NameOfUser").innerHTML;
+    var message = curr.getElementsByClassName("formmsg")[0].value;
+    console.log("Send " + type + " " + message);
+    
+    var buf = new Uint8Array(message.length+ 2 + id.length + 12 + 12 + 1);
+    buf[0] = type;
+    buf[1] = id.length;
+    var counter = 2;
+    for(let i=0; i<id.length; i++){
+        buf[i+counter] = id.charCodeAt(i);
+    }
+    counter+=id.length;
+    for (var i = 0; i < 12; i++) {
+        buf[i+counter] = objstr.charCodeAt(i);
+    }
+    counter+=12;
+    buf[counter] = 0;
+    counter++;
+    counter+=12;
+    for(let i=0; i<message.length; i++){
+        buf[i+counter] = message.charCodeAt(i);
+    }
+    socket.send(buf);
+    curr.reset();
+}
+
 socket.onmessage = renderMessages;
 
 function renderMessages(message) {
@@ -143,6 +174,8 @@ function renderMessages(message) {
         clone.querySelector(".reactions").textContent = likes;
         clone.querySelector(".reactions").setAttribute("id", objstr+"likes");
         clone.querySelector(".likeButton").setAttribute("id", objstr);
+        clone.querySelector(".comform").setAttribute("id", objstr+"com");
+        clone.querySelector(".commentholder").setAttribute("id", objstr+"comholder");
         
         tbody.appendChild(clone);
     }else if(type == 1){
@@ -178,13 +211,48 @@ function renderMessages(message) {
         }
         clone.querySelector(".likeButton").setAttribute("id", objstr);
         clone.querySelector(".reactions").setAttribute("id", objstr+"likes");
+        clone.querySelector(".commentholder").setAttribute("id", objstr+"comholder");
+        clone.querySelector(".comform").setAttribute("id", objstr+"com");
         clone.querySelector(".reactions").textContent = likes;
         
         tbody.appendChild(clone);
     }else if(type==2){
-        var post = document.getElementById(objstr+"likes");
+        console.log("Like Received!");
+        var post = document.getElementById(objstr+"likes");      
         if(post!=null){
             post.textContent = likes;
+        }
+    }else if(type==3){
+        console.log("Comment Received!");
+        var post = document.getElementById(objstr+"comholder");
+        console.log(objstr+"comholder");
+        if(post!=null){
+            //This means that it exists, so we need to use the comment template to add one
+            
+            //Get correct objstr
+            var objid = new Uint8Array(12);
+            for(let i=0; i<12; i++){
+                objid[i] = data[i+counter];
+            }
+            var objstr = '';
+            for (var i = 0; i < objid.length; i++) {
+                objstr += String.fromCharCode(objid[i]);
+            }
+            counter+=12;
+            
+            //Get message
+            var msg = new TextDecoder("utf-8").decode(data.subarray(counter, data.length));
+            console.log(msg);
+            
+            var template = document.querySelector('#comments');
+            var tbody = post;
+            var clone = template.content.cloneNode(true);
+            clone.querySelector(".smallName").textContent = id;
+            clone.querySelector(".comment").textContent = msg;
+            clone.querySelector(".reactions").textContent = likes;
+            clone.querySelector(".reactions").setAttribute("id", objstr+"likes");
+            clone.querySelector(".likeButton").setAttribute("id", objstr);
+            tbody.appendChild(clone);
         }
     }
 }
@@ -197,20 +265,17 @@ function like(objstr){
     console.log("Like objid: " + objid);
     sendRequest(2, 1, objid);
 }
-
-
-var coll = document.getElementsByClassName("collapse");
-for (var i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var postDiv = this.nextElementSibling;
+                    
+function collapse(col) {
+    col.classList.toggle("active");
+    var postDiv = col.nextElementSibling;
     if (postDiv.style.display === "block") {
       postDiv.style.display = "none";
     } else {
       postDiv.style.display = "block";
     }
-  });
 }
+                           
 
 var open = false;
 var fl = document.getElementById("friendslist");

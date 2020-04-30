@@ -164,6 +164,27 @@ public class WebSocket{
 				}else if(type==2){
 					int lks = Server.dbHandler.like(_id);
 					write(type, id.getBytes(), payload, line2, null, _id, (byte) lks, true);
+				}else if(type==3) {
+					System.out.println("Post Comment!");
+					
+					//We leave 12 bytes for the comment _id, as the normal slots are used for the original post.
+					byte[] m = Arrays.copyOfRange(payload, 12, payload.length);
+					
+					//Convert payload to string
+					String message = new String(m);
+					message = injectionDefense(message);
+					System.out.println("Message: " + message);
+					
+					Document doc = Server.dbHandler.write(id, type, message, likes, _id, line2, null);
+					
+					//Fill in the saved 12 bytes earlier
+					byte[] objid = ((ObjectId) doc.getObjectId("_id")).toByteArray();
+					for(int i=0; i<12; i++) {
+						payload[i] = objid[i];
+					}
+					
+					//Broadcast to all
+					write(type, id.getBytes(), payload, line2, null, _id, (byte) likes, true);
 				}else if(type == 4) {
 					System.out.println("Initial Request! " + id);
 					ArrayList<Document> docs =  Server.dbHandler.getPosts(0, 10);
@@ -172,6 +193,8 @@ public class WebSocket{
 						byte[] n = ((String) doc.get("name")).getBytes();
 						byte[] fn = null;
 						byte[] m = null;
+						ObjectId obj = doc.getObjectId("_id");
+						byte[] objid = obj.toByteArray();
 						if(t == 0) {
 							m = ((String) doc.get("message")).getBytes();
 							System.out.println("Sending Message " + m);
@@ -179,15 +202,22 @@ public class WebSocket{
 							fn = ((String) doc.get("filename")).getBytes();
 							Binary b = (Binary) doc.get("file");
 							m = b.getData();
+						}else if(t == 3) {
+							byte[] temp = ((ObjectId) doc.getObjectId("_id")).toByteArray();
+							byte[] temp2 = ((String) doc.get("message")).getBytes();
+							m = new byte[temp.length + temp2.length];
+							System.arraycopy(temp,0,m,0,temp.length);
+							System.arraycopy(temp2,0,m,temp.length,temp2.length);
+							Binary b = (Binary) doc.get("file");
+							objid = b.getData();
 						}
 						Binary temp = (Binary) doc.get("line2");
 						byte[] l2 = null;
 						if(temp != null) {
 							l2 = temp.getData();
 						}
-						ObjectId objid = doc.getObjectId("_id");
 						int lks = doc.getInteger("likes", 0);
-						write(t,n,m,l2,fn, objid.toByteArray(), (byte) lks, false);
+						write(t,n,m,l2,fn, objid, (byte) lks, false);
 					}
 				}
 			} catch (IOException e) {				
