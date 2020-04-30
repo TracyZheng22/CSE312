@@ -3,7 +3,9 @@ FROM ubuntu:16.04
 RUN apt-get update
 
 #https://hub.docker.com/_/openjdk
-FROM openjdk:8
+#FROM openjdk:8
+
+FROM maven:3.6.3-jdk-8
 
 # Allow port 8000 to be accessed
 # from outside the container
@@ -18,13 +20,11 @@ WORKDIR /root
 # Copy all app files into the image
 COPY . .
 
-FROM maven:3.6.3-jdk-8
-WORKDIR /root
 RUN ls
-RUN mvn install
 
-# Run the app
-RUN ["javac", "/root/src/main/java/Server.java"]
+WORKDIR /root
 
-CMD ["java", "Server"]
+RUN mvn clean
+RUN mvn compile
+RUN mvn exec:java -Dexec.mainClass=main.java.Server
 
