@@ -26,5 +26,5 @@ WORKDIR /root
 
 RUN mvn clean
 RUN mvn compile
-RUN mvn exec:java -Dexec.mainClass=main.java.Server
+CMD mvn exec:java -Dexec.mainClass=main.java.Server
 
