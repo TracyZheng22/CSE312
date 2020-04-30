@@ -62,6 +62,24 @@
                     </div>
                     <div id="serverPosts">
                     </div>
+                    <template id = "comments"> 
+                        <div class="commentstemp">
+                            <div class="commentBlock">
+                                <div class="profileInfo">
+                                    <img class="smallProfile" src="BookFaceLogo.png">
+                                    <p class="name"></p>
+                                </div>
+                                <p class = "comment"></p>
+                                <div class="reactionContainer">
+                                  <form>
+                                    <input type="hidden" id="readCounterCNum" value=""/>
+                                  </form>
+                                    <p class="reactions"><b id ="LikeCountC"></b></p>
+                                    <button class="likeButton" onclick="like()">Like</button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
                     <template id="posts">
                         <div class="postTemplate">
                             <div class="profileInfo">
@@ -72,31 +90,10 @@
                                 <p class="postMessage"></p>
                             </div>
                             <div class="reactionContainer">
-                              <form>
-                                <input type="hidden" id="readCounterPNum" value=""/>
-                              </form>
-                                <p class="reactions"><b id ="LikeCountP"></b></p>
-                                <button class="likeButton" onclick="likePost()">Like</button>
+                                <p class="reactions"></p>
+                                <button class="likeButton" onclick="like(this.id)">Like</button>
                             </div>
                             <div class="commentholder"></div>
-                            <template id = "comments"> 
-                                <div class="commentstemp">
-                                    <div class="commentBlock">
-                                        <div class="profileInfo">
-                                            <img class="smallProfile" src="BookFaceLogo.png">
-                                            <p class="name"></p>
-                                        </div>
-                                        <p class = "comment"></p>
-                                        <div class="reactionContainer">
-                                          <form>
-                                            <input type="hidden" id="readCounterCNum" value=""/>
-                                          </form>
-                                            <p class="reactions"><b id ="LikeCountC"></b></p>
-                                            <button class="likeButton" onclick="likeCommon()">Like</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
                         </div>
                     </template>
                     <template id="multiposts">
@@ -108,31 +105,10 @@
                             <div class="mediaContent">
                             </div>
                             <div class="reactionContainer">
-                              <form>
-                                <input type="hidden" id="readCounterPNum" value=""/>
-                              </form>
-                                <p class="reactions"><b id ="LikeCountP"></b></p>
+                                <p class="reactions"></p>
                                 <button class="likeButton" onclick="likePost()">Like</button>
                             </div>
                             <div class="commentholder"></div>
-                            <template id = "comments"> 
-                                <div class="commentstemp">
-                                    <div class="commentBlock">
-                                        <div class="profileInfo">
-                                            <img class="smallProfile" src="BookFaceLogo.png">
-                                            <p class="name"></p>
-                                        </div>
-                                        <p class = "comment"></p>
-                                        <div class="reactionContainer">
-                                          <form>
-                                            <input type="hidden" id="readCounterCNum" value=""/>
-                                          </form>
-                                            <p class="reactions"><b id ="LikeCountC"></b></p>
-                                            <button class="likeButton" onclick="likeCommon()">Like</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
                         </div>
                     </template>
                 </div>

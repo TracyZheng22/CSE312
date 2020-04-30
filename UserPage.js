@@ -2,19 +2,24 @@ let socket = new WebSocket('ws://' + window.location.host + '/websocket');
 socket.binaryType = "arraybuffer";
 socket.onopen = function() {
     console.log("Connected.");
-    sendRequest(4, 0);
+    sendRequest(4, 0, null);
 };
 
-function sendRequest(type, n){
-    console.log("Initial Request");
+function sendRequest(type, n, objid){
+    console.log("Request " + type);
     var id = document.getElementById("NameOfUser").innerHTML;
-    var buf = new Uint8Array(2 + id.length + 1);
+    var buf = new Uint8Array(2 + id.length + 1 + 12);
     buf[0] = type;
     buf[1] = id.length;
     for(let i=0; i<id.length; i++){
         buf[i+2] = id.charCodeAt(i);
     }
-    buf[2+id+length+1]=n;
+    if(objid!=null){
+        for(let i=0; i<12; i++){
+            buf[i+2+id.length] = objid[i];
+        }
+    }
+    buf[2+id+length+13]=n;
     socket.send(buf);
 }
 
@@ -42,14 +47,15 @@ function sendMessage() {
         alert("Please send either a message or a file. (Not Both)");
     }else if(message.length != 0){
         console.log("send: " + type + id.length + id + message);
-        var buf = new Uint8Array(message.length+ 2 + id.length);
+        var buf = new Uint8Array(message.length+ 2 + id.length + 13);
         buf[0] = type;
         buf[1] = id.length;
         for(let i=0; i<id.length; i++){
             buf[i+2] = id.charCodeAt(i);
         }
+        buf[i+2+id.length+12] = 0;
         for(let i=0; i<message.length; i++){
-            buf[i+2+id.length] = message.charCodeAt(i);
+            buf[i+2+id.length+13] = message.charCodeAt(i);
         }
         socket.send(buf);
     }else if(file.files.length==1){
@@ -59,8 +65,8 @@ function sendMessage() {
         
         var filesize = ((file.files[0].size/1024)/1024).toFixed(4);
         
-        if(filesize > 5){
-            alert("No files greater than 5 MB! (This is to preserve space)");
+        if(filesize > 1){
+            alert("No files greater than 1 MB! (This is to preserve space)");
             document.getElementById("cform").reset();
             return;
         }
@@ -69,13 +75,15 @@ function sendMessage() {
         {
             rawData = new Uint8Array(e.target.result);                                                                                    
             console.log(rawData);
-            buf = new Uint8Array(rawData.length + 3 + id.length + filename.length);
+            buf = new Uint8Array(rawData.length + 3 + id.length + filename.length + 13);
             buf[0] = type;
             buf[1] = id.length;
             for(let i=0; i<id.length; i++){
                 buf[i+2] = id.charCodeAt(i);
             }
-            counter = 2+id.length;
+            counter = 2+id.length+12;
+            buf[counter] = 0;
+            counter++;
             buf[counter] = filename.length;
             counter++;
             for(let i=0; i<filename.length; i++){
@@ -101,15 +109,29 @@ function renderMessages(message) {
     var type = data[0];
     console.log("Received type " + type);
     
+    var id_length = data[1];
+    var counter = 2;
+    var id_bin = new Uint8Array(id_length);
+    for(let i=0; i<id_length; i++){
+        id_bin[i] = data[i+counter];
+    }
+    counter+=id_length;
+    var objid = new Uint8Array(12);
+    for(let i=0; i<12; i++){
+        objid[i] = data[i+counter];
+    }
+    var objstr = '';
+    for (var i = 0; i < objid.length; i++) {
+        objstr += String.fromCharCode(objid[i]);
+    }
+    counter+=12;
+    var likes = data[counter];
+    counter++;
+    var id =  new TextDecoder("utf-8").decode(id_bin);
+    
     if(type == 0){
         console.log("Message Post Received!");
-        var id_length = data[1];
-        var id_bin = new Uint8Array(id_length);
-        for(let i=0; i<id_length; i++){
-            id_bin[i] = data[i+2];
-        }
-        var id =  new TextDecoder("utf-8").decode(id_bin);
-        var msg = new TextDecoder("utf-8").decode(data.subarray(id_length+2, data.length));
+        var msg = new TextDecoder("utf-8").decode(data.subarray(counter, data.length));
         console.log(msg);
 
         //https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template
@@ -118,24 +140,23 @@ function renderMessages(message) {
         var clone = template.content.cloneNode(true);
         clone.querySelector(".smallName").textContent = id;
         clone.querySelector(".postMessage").textContent = msg;
+        clone.querySelector(".reactions").textContent = likes;
+        clone.querySelector(".reactions").setAttribute("id", objstr+"likes");
+        clone.querySelector(".likeButton").setAttribute("id", objstr);
         
         tbody.appendChild(clone);
     }else if(type == 1){
         console.log("File Post Received!");
-        var id_length = data[1];
-        var id_bin = new Uint8Array(id_length);
-        for(let i=0; i<id_length; i++){
-            id_bin[i] = data[i+2];
-        }
-        var id =  new TextDecoder("utf-8").decode(id_bin);
-        var file_len = data[id_length+2];
+        var file_len = data[counter];
+        counter++;
         console.log("file_len " + file_len);
         var file_bin = new Uint8Array(file_len);
         for(let i=0; i<file_len; i++){
-            file_bin[i] = data[i+3+id_length];
+            file_bin[i] = data[i+counter];
         }
+        counter+=file_len;
         var filename = new TextDecoder("utf-8").decode(file_bin);
-        var dataFile = data.subarray(file_len+id_length+3, data.length);
+        var dataFile = data.subarray(counter, data.length);
         
         var template = document.querySelector('#multiposts');
         var tbody = document.querySelector("#serverPosts");
@@ -155,10 +176,28 @@ function renderMessages(message) {
         }else{
             clone.querySelector(".mediaContent").innerHTML = "<iframe width='100%' height='100%' src=data:"+mime+";base64," + btoa(datastr) + ">" + filename + "</iframe>";
         }
+        clone.querySelector(".likeButton").setAttribute("id", objstr);
+        clone.querySelector(".reactions").setAttribute("id", objstr+"likes");
+        clone.querySelector(".reactions").textContent = likes;
         
         tbody.appendChild(clone);
+    }else if(type==2){
+        var post = document.getElementById(objstr+"likes");
+        if(post!=null){
+            post.textContent = likes;
+        }
     }
 }
+
+function like(objstr){
+    var objid = new Uint8Array(12);
+    for (var i = 0; i < 12; i++) {
+        objid[i] = objstr.charCodeAt(i);
+    }
+    console.log("Like objid: " + objid);
+    sendRequest(2, 1, objid);
+}
+
 
 var coll = document.getElementsByClassName("collapse");
 for (var i = 0; i < coll.length; i++) {

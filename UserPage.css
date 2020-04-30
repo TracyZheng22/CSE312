@@ -129,6 +129,10 @@ h2 {
     /* Change width and height in javascript if possible.*/
 }
 
+.objid{
+    visibility: hidden;
+}
+
 .profileInfo {
     height: 50px;
     max-width: 200px;

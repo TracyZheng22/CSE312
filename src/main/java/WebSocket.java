@@ -115,7 +115,11 @@ public class WebSocket{
 				String id = new String(Arrays.copyOfRange(payload, 2, id_len+2));
 				System.out.println("id: " + id);
 				
-				payload = Arrays.copyOfRange(payload, id_len+2, payload.length);
+				byte[] _id = Arrays.copyOfRange(payload, id_len+2, id_len+14);
+				
+				int likes = payload[id_len+14];
+				
+				payload = Arrays.copyOfRange(payload, id_len+15, payload.length);
 				
 				if(type == 0) {
 					System.out.println("Post Message!");
@@ -124,10 +128,10 @@ public class WebSocket{
 					message = injectionDefense(message);
 					System.out.println("Message: " + message);
 					
-					Server.dbHandler.write(id, type, message, 0, null, line2, null);
-					
-					//Send back to sender for immediate view
-					write(type, id.getBytes(), message.getBytes(), line2, null);
+					Document doc = Server.dbHandler.write(id, type, message, 0, null, line2, null);
+					ObjectId objid = doc.getObjectId("_id");
+					int lks = doc.getInteger("likes", 0);
+					write(type, id.getBytes(), message.getBytes(), line2, null, objid.toByteArray(), (byte) lks, false);
 				}else if(type == 1) {
 					System.out.println("Post File!");
 					int file_len = (payload[0] & 0xFF);
@@ -146,8 +150,10 @@ public class WebSocket{
 					
 					if(fileTypes.contains(filetype)) {
 						//Save the data onto the database.
-						Server.dbHandler.write(id, 1, null, 0, payload, line2, filename);
-						write(type, id.getBytes(), payload, line2, filename.getBytes());
+						Document doc = Server.dbHandler.write(id, 1, null, 0, payload, line2, filename);
+						ObjectId objid = doc.getObjectId("_id");
+						int lks = doc.getInteger("likes", 0);
+						write(type, id.getBytes(), payload, line2, filename.getBytes(), objid.toByteArray(), (byte) lks, false);
 						
 						//TEMPORARY: save locally
 						/*File file = new File(id + filename);
@@ -155,6 +161,9 @@ public class WebSocket{
 						writer.write(payload);
 						writer.flush();*/
 					}
+				}else if(type==2){
+					int lks = Server.dbHandler.like(_id);
+					write(type, id.getBytes(), payload, line2, null, _id, (byte) lks, true);
 				}else if(type == 4) {
 					System.out.println("Initial Request! " + id);
 					ArrayList<Document> docs =  Server.dbHandler.getPosts(0, 10);
@@ -176,7 +185,9 @@ public class WebSocket{
 						if(temp != null) {
 							l2 = temp.getData();
 						}
-						write(t,n,m,l2,fn);
+						ObjectId objid = doc.getObjectId("_id");
+						int lks = doc.getInteger("likes", 0);
+						write(t,n,m,l2,fn, objid.toByteArray(), (byte) lks, false);
 					}
 				}
 			} catch (IOException e) {				
@@ -187,36 +198,60 @@ public class WebSocket{
 		}
 	}
 	
-	public void write(int t, byte[] n, byte[] m, byte[] line2, byte[] fn) {
+	public void write(int t, byte[] n, byte[] m, byte[] line2, byte[] fn, byte[] _id, byte likes, boolean broadcast) {
 		//Package the data with metadata
 		byte[] send = null;
 		if(fn != null && fn.length != 0) {
-			send = new byte[3+n.length+fn.length+m.length];
+			send = new byte[3+n.length+fn.length+m.length+13];
+			int counter = 0;
 			send[0] = (byte) t;
 			send[1] = (byte) n.length;
+			counter+=2;
 			for(int i=0; i<n.length; i++) {
-				send[i+2] = n[i];
+				send[i+counter] = n[i];
 			}
-			send[n.length+2]=(byte) fn.length;
+			counter+=n.length;
+			for(int i=0; i<12; i++) {
+				send[i+counter] = _id[i];
+			}
+			counter+=12;
+			send[counter] = likes;
+			counter++;
+			send[counter]=(byte) fn.length;
+			counter++;
 			for(int i=0; i<fn.length; i++) {
-				send[i+n.length+3] = fn[i];
+				send[i+counter] = fn[i];
 			}
+			counter+=fn.length;
 			for(int i=0; i<m.length; i++) {
-				send[i+3+fn.length+n.length] = m[i];
+				send[i+counter] = m[i];
 			}
 		}else {
-			send = new byte[2+n.length+m.length];
+			int counter = 0;
+			send = new byte[2+n.length+m.length+13];
 			send[0] = (byte) t;
 			send[1] = (byte) n.length;
+			counter+=2;
 			for(int i=0; i<n.length; i++) {
-				send[i+2] = n[i];
+				send[i+counter] = n[i];
 			}
+			counter+=n.length;
+			for(int i=0; i<12; i++) {
+				send[i+counter] = _id[i];
+			}
+			counter+=12;
+			send[counter] = likes;
+			counter++;
 			for(int i=0; i<m.length; i++) {
-				send[i+2+n.length] = m[i];
+				send[i+counter] = m[i];
 			}
 		}
 		
-		write(send, line2);
+		if(broadcast) {
+			write(send, line2);
+		} else {
+			write(socket, send, line2);
+		}
 	}
 	
 	public void write(byte[] message, byte[] line2) {
@@ -250,6 +285,33 @@ public class WebSocket{
 		}
 		for(Socket s : cleanup) {
 			Server.websockets.remove(s); 
+		}
+	}
+	
+	public void write(Socket socket, byte[] message, byte[] line2) {
+		System.out.println("Writing to Socket: " + socket.getPort());
+		try {
+			OutputStream out = socket.getOutputStream();
+			
+			//Set up frame with opcode
+			out.write(-126);
+			
+			if(message.length<126) {
+				out.write(message.length);
+			}else if (message.length < 65536) {
+				out.write(126);
+				out.write(line2);
+			}else if (message.length >= 65536) {
+				out.write(127);
+				out.write(line2);
+			}
+			
+			//Send message
+			out.write(message);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+			Server.websockets.remove(socket);
 		}
 	}
 	

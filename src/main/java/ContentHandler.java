@@ -3,6 +3,7 @@ import com.mongodb.client.MongoClient;
  import com.mongodb.client.MongoCollection;
  import com.mongodb.client.MongoCursor;
  import com.mongodb.client.MongoDatabase;
+import static com.mongodb.client.model.Filters.*;
 
 import java.util.ArrayList;
 
@@ -43,14 +44,16 @@ public class ContentHandler {
         }*/
     }
     
-    public void write(String name, int type, String msg, int likes, byte[] file, byte[] line2, String filename) {
+    public Document write(String name, int type, String msg, int likes, byte[] file, byte[] line2, String filename) {
+    	Document document = null;
     	if(type == 0) {
     		//Post Message
     		System.out.println("Write to Database: " + name + " " + msg);
     		
-    		Document document = new Document("type", type)
+    		document = new Document("type", type)
             		.append("name", name)
             		.append("message", msg)
+            		.append("likes", likes)
     				.append("line2", line2);
     		
     		col.insertOne(document);
@@ -58,14 +61,16 @@ public class ContentHandler {
     		//Post File
     		System.out.println("Write to Database: " + name);
     		
-    		Document document = new Document("type", type)
+    		document = new Document("type", type)
             		.append("name", name)
             		.append("filename", filename)
             		.append("file", file)
+            		.append("likes", likes)
     				.append("line2", line2);
     		
     		col.insertOne(document);
     	}
+    	return document;
     }
     
     /**
@@ -90,6 +95,19 @@ public class ContentHandler {
             }
         }
         return ids;
+    }
+    
+    /**
+     * Likes a specific post
+     * @param _id
+     */
+    public int like(byte[] _id) {
+    	ObjectId objid = new ObjectId(_id);
+    	Document doc = col.find(eq("_id", objid)).first();
+    	int likes = doc.getInteger("likes");
+    	
+    	col.updateOne(eq("_id", objid), new Document("$set", new Document("likes", likes+1)));
+    	return doc.getInteger("likes");
     }
     
     /**
