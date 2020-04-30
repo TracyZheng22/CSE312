@@ -21,7 +21,7 @@ COPY . .
 RUN ls
 
 # Run the app
-RUN ["javac", "/root/Server.java"]
+RUN ["javac", "/root/src/main/java/Server.java"]
 
 CMD ["java", "Server"]
 
