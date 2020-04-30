@@ -1,7 +1,6 @@
 FROM ubuntu:16.04
 
 FROM maven:3.6.3-jdk-8
-RUN mvn install
 
 RUN apt-get update
 
@@ -22,6 +21,8 @@ WORKDIR /root
 COPY . .
 
 RUN ls
+
+RUN mvn install
 
 # Run the app
 RUN ["javac", "/root/src/main/java/Server.java"]
