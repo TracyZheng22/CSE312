@@ -1,5 +1,8 @@
 FROM ubuntu:16.04
 
+FROM maven:4.0.0
+RUN mvn install
+
 RUN apt-get update
 
 #https://hub.docker.com/_/openjdk
