@@ -1,7 +1,5 @@
 FROM ubuntu:16.04
 
-FROM maven:3.6.3-jdk-8
-
 RUN apt-get update
 
 #https://hub.docker.com/_/openjdk
@@ -19,6 +17,9 @@ WORKDIR /root
 
 # Copy all app files into the image
 COPY . .
+
+FROM maven:3.6.3-jdk-8
+RUN mvn install
 
 RUN ls
 
