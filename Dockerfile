@@ -22,7 +22,8 @@ COPY . .
 
 RUN ls
 
-RUN mvn install
+COPY pom.xml /tmp/pom.xml
+RUN mvn -B -f /tmp/pom.xml -s /usr/share/maven/ref/settings-docker.xml dependency:resolve
 
 # Run the app
 RUN ["javac", "/root/src/main/java/Server.java"]
