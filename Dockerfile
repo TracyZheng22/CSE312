@@ -19,6 +19,7 @@ WORKDIR /root
 COPY . .
 
 FROM maven:3.6.3-jdk-8
+WORKDIR /root
 RUN ls
 RUN mvn install
 
