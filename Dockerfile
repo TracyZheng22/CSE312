@@ -19,12 +19,8 @@ WORKDIR /root
 COPY . .
 
 FROM maven:3.6.3-jdk-8
-RUN mvn install
-
 RUN ls
-
-COPY pom.xml /tmp/pom.xml
-RUN mvn -B -f /tmp/pom.xml -s /usr/share/maven/ref/settings-docker.xml dependency:resolve
+RUN mvn install
 
 # Run the app
 RUN ["javac", "/root/src/main/java/Server.java"]
