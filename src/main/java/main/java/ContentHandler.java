@@ -20,6 +20,7 @@ import org.bson.types.ObjectId;
 public class ContentHandler {
 	
 	MongoCollection<Document> col;
+	MongoCollection<Document> sec;
 	//GridFSBucket gridFSBucket;
 	
     public ContentHandler(){
@@ -28,6 +29,7 @@ public class ContentHandler {
         //MongoDatabase csDatabase = mongoClient.getDatabase("CSE312");
         MongoDatabase csDatabase = mongoClient.getDatabase("Team20");
         col = csDatabase.getCollection("CSE312 Group");
+        sec = csDatabase.getCollection("Secure");
         //gridFSBucket = GridFSBuckets.create(csDatabase);
 
         /*Document document = new Document("name","Vin")
@@ -46,6 +48,18 @@ public class ContentHandler {
             System.out.println("id: " + id);
             System.out.println("name: " + name);
         }*/
+    }
+    
+    /**
+     * Writes salted hash and username to database
+     * @param username
+     * @param salted_hash
+     */
+    public void secureWrite(String username, byte[] salted_hash) {
+    	System.out.println("Write to Secure! Contents Hidden For Safety");
+    	Document document = new Document("username", username)
+    			.append("password", salted_hash);
+    	sec.insertOne(document);
     }
     
     public Document write(String name, int type, String msg, int likes, byte[] file, byte[] line2, String filename) {

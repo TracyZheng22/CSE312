@@ -18,16 +18,20 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.net.ssl.*;
 
 /**
  * Main class that beings the server on the specified port and handles incoming requests through
  * a ServerSocket.
  * 
- * Ryan note for phase 3: Salting and hashing for passwords?
  */
 public class Server {
 	static int port = 8000;
@@ -202,43 +206,48 @@ class ServerBox extends Thread{
 				} else {
 					autoProcessFile(head[1], socket, writer);
 				}
+			}else if(head[0].equals("POST") && head[2].equals("HTTP/1.1")) {
 				
-				/*else if(head[1].equals("/UserPage.html")){
-					processFile("UserPage.html", "text/html", socket, writer);
-				}else if(head[1].equals("/UserPage.css")){
-					processFile("UserPage.css", "text/css", socket, writer);
-				}else if(head[1].equals("/Register.html")) {
-					processFile("Register.html", "text/html", socket,  writer);
-				}else if(head[1].equals("/Register.js")) {
-					processFile("Register.js", "text/javascript", socket, writer);
-				}else if(head[1].equals("/UserPage.js")){
-					processFile("UserPage.js", "text/javascript", socket, writer);
-				}else if(head[1].equals("/feed.html")){
-					processFile("feed.html", "text/html", socket, writer);
-				}else if(head[1].equals("/Sign-in.html")){
-					processFile("Sign-in.html", "text/html", socket, writer);
-				}else if(head[1].equals("/BookFaceLogo.png") || head[1].equals("/favicon.ico")){
-					processFile("BookFaceLogo.png", "image/png", socket, writer);
-				}else if(head[1].equals("/boxconnected.png")){
-					processFile("boxconnected.png", "image/png", socket, writer);
-				}else if(head[1].equals("/connected.png")){
-					processFile("connected.png", "image/png", socket, writer);
-				}else if(head[1].equals("/SpongeBob_stock_art.png")){
-					processFile("SpongeBob_stock_art.png", "image/png", socket, writer);
-				}else if(head[1].equals("/feedstyle.css")) {
-					processFile("feedstyle.css", "text/css", socket, writer);
-				}else if(head[1].equals("/style.css")) {
-					processFile("style.css", "text/css", socket, writer);
-				}else if(head[1].equals("/landing.css")){
-					processFile("landing.css", "text/css", socket, writer);
-				}else if(head[1].equals("/landing.js")){
-					processFile("landing.js", "text/javascript", socket, writer);
-				}else if(head[1].equals("/sign.js")){
-					processFile("sign.js", "text/javascript", socket, writer);
-				}else{
-					//404 Not Found
-					print404Text("404 Not Found!", socket, writer);
-				}*/
+				String type = headers.get("Content-Type");
+				
+				//Find the length
+				int length = Integer.parseInt(headers.get("Content-Length"));
+		
+				//Read content length and then decode the input
+				String input = "";
+				for(int i=0; i<length; i++) {
+					input += (char) reader.read();
+				}
+				
+				if(type.contains("urlencoded")) {
+					input = decodeQuery(input);
+					//Process headers
+					String[] temp = input.split("&");
+					for(String header : temp) {
+						String[] pair = header.split("=", 2);
+						headers.put(pair[0], pair[1]);
+					}
+				}
+				
+				if(head[1].equals("/register")) {
+					//Grab the URI encoded registration information.
+					String username = headers.get("username");
+					String password = headers.get("password");
+					
+					//Salt and hash password
+					byte[] salted_hash = hash(password);
+					Server.dbHandler.secureWrite(username, salted_hash);
+				}else if(head[1].equals("/login")) {
+					//Grab the URI encoded registration information.
+					String username = headers.get("username");
+					String password = headers.get("password");
+					
+					//Salt and hash password
+					byte[] salted_hash = hash(password);
+					
+					//Get stored password
+					
+				}
 			}
 			//Just to make everything look pretty to read in console
 			System.out.println("------------------------------------------------------------------------------");
@@ -246,7 +255,23 @@ class ServerBox extends Thread{
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+	}
+	
+	public static byte[] hash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		//Salting and Hashing using PBKDF2 with hmac and SHA256
+		SecureRandom random = new SecureRandom();
+		byte[] salt = new byte[16];
+		random.nextBytes(salt);
+		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+		byte[] hash = factory.generateSecret(new PBEKeySpec(password.toCharArray(), salt, 100000, 128)).getEncoded();
+		return hash;
 	}
 
 	/**
@@ -384,7 +409,7 @@ class ServerBox extends Thread{
 	}
 
 	/**
-	 * Query decoding, currently unused and unmodified for this project
+	 * Query decoding
 	 * 
 	 * @param text
 	 * @return decoded text
@@ -396,7 +421,7 @@ class ServerBox extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("Decoded text: " + text);
+		//System.out.println("Decoded text: " + text);
 		return text;
 	}
 
