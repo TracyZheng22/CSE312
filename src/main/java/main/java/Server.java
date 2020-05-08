@@ -199,10 +199,18 @@ class ServerBox extends Thread{
 					}
 				}else if(head[1].equals("/") || head[1].equals("/index.html")){
 					processFile("index.html", "text/html", socket, writer);
-				}else if(head[1].equals("/UserPage.html")){
+				} else {
+					autoProcessFile(head[1], socket, writer);
+				}
+				
+				/*else if(head[1].equals("/UserPage.html")){
 					processFile("UserPage.html", "text/html", socket, writer);
 				}else if(head[1].equals("/UserPage.css")){
 					processFile("UserPage.css", "text/css", socket, writer);
+				}else if(head[1].equals("/Register.html")) {
+					processFile("Register.html", "text/html", socket,  writer);
+				}else if(head[1].equals("/Register.js")) {
+					processFile("Register.js", "text/javascript", socket, writer);
 				}else if(head[1].equals("/UserPage.js")){
 					processFile("UserPage.js", "text/javascript", socket, writer);
 				}else if(head[1].equals("/feed.html")){
@@ -230,7 +238,7 @@ class ServerBox extends Thread{
 				}else{
 					//404 Not Found
 					print404Text("404 Not Found!", socket, writer);
-				}
+				}*/
 			}
 			//Just to make everything look pretty to read in console
 			System.out.println("------------------------------------------------------------------------------");
@@ -277,6 +285,49 @@ class ServerBox extends Thread{
 		return;
 	}
 
+	/**
+	 * Processes a single file on the server through an HTTP response.
+	 * 
+	 * @param name filename
+	 * @param socket 
+	 * @param writer
+	 * @throws IOException
+	 */
+	public static void autoProcessFile(String name, Socket socket, PrintWriter writer) throws IOException{
+		//FileReader documentation from
+		//https://docs.oracle.com/javase/8/docs/api/java/io/FileReader.html
+		File f = new File(name.substring(1));
+		if(!f.exists()) {
+			//404 Not Found
+			print404Text("404 Not Found!", socket, writer);
+		}
+		String type = Files.probeContentType(f.toPath());
+		if(name.contains("js")) {
+			type = "text/javascript";
+		}
+		BufferedReader file = new BufferedReader(new FileReader(f));
+		long length = f.length();
+		writer.println("HTTP/1.1 200 OK");
+		writer.println("Content-Type: " + type + "; charset=utf-8");
+		writer.println("Connection: close");
+		writer.println("Content-Length: " + length);
+		writer.println("Set-Cookie: visit=true; Max-Age: 10000");
+		writer.println();
+		String line;
+		if(type.contains("image")) {
+			//https://docs.oracle.com/javase/8/docs/api/java/nio/file/Files.html
+			byte[] image = Files.readAllBytes(f.toPath());
+			socket.getOutputStream().write(image);
+			return;
+		}
+		while((line = file.readLine()) != null) {
+			writer.println(line);
+		}
+		byte[] bytes = Files.readAllBytes(f.toPath());
+		socket.getOutputStream().write(bytes);
+		return;
+	}
+	
 	
 	/**
 	 * Processes queries, currently unused and unmodified for this project.
