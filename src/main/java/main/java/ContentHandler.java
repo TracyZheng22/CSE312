@@ -219,7 +219,7 @@ public class ContentHandler {
     		}
     		int type = doc.getInteger("type");
     		
-	        if((type == 3 && arrayId(docs, _id)) || ((type == 0 || type == 1) && start <= counter && counter < end)) {  
+	        if((type == 3 && arrayId(docs, _id)) || ((type == 0 || type == 1))){ //&& start <= counter && counter < end)) {  
 	        	System.out.println(doc.getInteger("type"));
 	            docs.add(doc);
 	        }

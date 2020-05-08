@@ -282,10 +282,10 @@ class ServerBox extends Thread{
 					if(verify) {
 						System.out.println("Login successful!");
 						
-						//Generate token
+						//TODO: Generate token
 						
 						//Send templated userpage.
-						
+						sendUserPage(username, null, writer); //TODO: add token here
 					} else {
 						printPlainText("Failed, incorrect password! Try again!", socket, writer);
 						return;
@@ -305,6 +305,28 @@ class ServerBox extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void sendUserPage(String username, byte[] token, PrintWriter writer) throws IOException {
+		File template_file = new File("UserPage.html");
+		byte[] bytes = Files.readAllBytes(template_file.toPath());
+		String template = new String(bytes);
+		
+		//TODO: More customization
+		template.replace("CSE312 Group", username);
+		
+		bytes = template.getBytes();
+	
+		long length = bytes.length;
+		
+		//TODO: add token to headers
+		writer.println("HTTP/1.1 200 OK");
+		String type = "text/html";
+		writer.println("Content-Type: " + type + "; charset=utf-8");
+		writer.println("Connection: close");
+		writer.println("Content-Length: " + length);
+		writer.println();
+		socket.getOutputStream().write(bytes);
 	}
 	
 	public static byte[] hash(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -333,7 +355,6 @@ class ServerBox extends Thread{
 		writer.println("Content-Type: " + type + "; charset=utf-8");
 		writer.println("Connection: close");
 		writer.println("Content-Length: " + length);
-		writer.println("Set-Cookie: visit=true; Max-Age: 10000");
 		writer.println();
 		String line;
 		if(type.contains("image")) {
@@ -347,7 +368,6 @@ class ServerBox extends Thread{
 		}
 		byte[] bytes = Files.readAllBytes(f.toPath());
 		socket.getOutputStream().write(bytes);
-		return;
 	}
 
 	/**
