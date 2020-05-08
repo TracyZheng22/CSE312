@@ -293,7 +293,8 @@ class ServerBox extends Thread{
 						//Send templated userpage.
 						sendUserPage(username, null, writer); //TODO: add token here
 					} else {
-						printPlainText("Failed, incorrect password! Try again!", socket, writer);
+						//Unauthorized! Send 401.
+						print401Text("Failed, incorrect password! Try again!", socket, writer);
 						return;
 					}
 				}
@@ -463,6 +464,22 @@ class ServerBox extends Thread{
 		writer.println(text);
 	}
 
+	/**
+	 * Response to an unauthorized access to private information.
+	 * 
+	 * @param text
+	 * @param socket
+	 * @param writer
+	 */
+	public static void print401Text(String text, Socket socket, PrintWriter writer) {
+		writer.println("HTTP/1.1 401 Unauthorized");
+		writer.println("Content-Type: text/plain; charset=utf-8");
+		writer.println("Connection: close");
+		writer.println("Content-Length: " + text.length());
+		writer.println(); //This is to indicate the end of the headers.
+		writer.println(text);
+	}
+	
 	/**
 	 * Sends a plaintext response
 	 * 

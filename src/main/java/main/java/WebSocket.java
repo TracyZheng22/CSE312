@@ -106,6 +106,10 @@ public class WebSocket{
 				//3=Comment
 				//4=Request Initial
 				//5=Request Specific
+				//6=Add Friend
+				//7=Remove Friend
+				//8=DM Request
+				//9=DM message
 				int type = (payload[0] & 0xFF);
 				System.out.println("Type: " + type);
 				
