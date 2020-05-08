@@ -42,6 +42,7 @@ body {
 
 .Username{
     margin-top: 30px;
+    width: 250px;
     font-size: 35px;
     font-style: italic;
     color: black;

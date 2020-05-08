@@ -245,6 +245,12 @@ class ServerBox extends Thread{
 						return;
 					}
 					
+					if(injectionDefense(username) != username) {
+						//Send reply with error message
+						printPlainText("Failed, injection prevention. Please use a different username!", socket, writer);
+						return;
+					}
+					
 					//Salt and hash password
 					SecureRandom random = new SecureRandom();
 					byte[] salt = new byte[16];
@@ -308,12 +314,17 @@ class ServerBox extends Thread{
 	}
 	
 	public void sendUserPage(String username, byte[] token, PrintWriter writer) throws IOException {
+		System.out.println("Sending " + username + " UserPage");
 		File template_file = new File("UserPage.html");
 		byte[] bytes = Files.readAllBytes(template_file.toPath());
 		String template = new String(bytes);
 		
 		//TODO: More customization
-		template.replace("CSE312 Group", username);
+		template = template.replace("<title>UserPage</title>", "<title>" + username + "</title>");
+		template = template.replace("<h1 class=\"Username\" id = \"NameOfUser\">#####USERNAME#####</h1>",
+				"<h1 class=\"Username\" id = \"NameOfUser\">" + username + "</h1>");
+		
+		System.out.println(template);
 		
 		bytes = template.getBytes();
 	
