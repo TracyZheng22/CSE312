@@ -283,7 +283,6 @@ class ServerBox extends Thread{
 						System.out.println("Login successful!");
 						
 						//Generate token
-						JsonToken[] 
 						
 						//Send templated userpage.
 						
