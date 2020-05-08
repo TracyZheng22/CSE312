@@ -20,6 +20,16 @@ socket.onopen = function() {
     sendRequest(4, 0, null);
 };
 
+function addFriend(){
+    var user = document.getElementById("flcont").value;
+    console.log("Add Friend " + user);
+}
+
+function unFriend(){
+    var user = document.getElementById("flcont").value;
+    console.log("Remove Friend " + user);
+}
+
 function sendRequest(type, n, objid){
     console.log("Request " + type);
     var id = document.getElementById("NameOfUser").innerHTML;

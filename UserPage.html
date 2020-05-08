@@ -132,12 +132,24 @@
         <div id="friendslist">
                 <div id="friendfunc">
                     <button onclick="friendsList()" id="flopen">Friends List</button>
-                    <button id="addFriend">Add A Friend</button>
-                    <button id="edit">Edit</button>
+                    <button id="addFriend" onclick="addFriend()">Add A Friend</button>
+                    <button id="edit" onclick="unFriend()">Unfriend</button>
+                    <input id="flcont" type="text" name="msg">
                 </div>
                 <div id="friends">
                 </div>
         </div>
+        <template id = "DMtemplate">
+            <div class="DM">
+                <button class="close" onclick="this.parentElement.parentElement.removeChild(this.parentElement)">X</button>
+                <div class="chat">
+                </div>
+                <form onsubmit="sendDM(this); return false;" class="chatform">
+                    <input class="chatmsg" type="text" name="msg">
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+        </template>
         <script type="text/javascript" src="UserPage.js"></script>
     </body>
 </html>

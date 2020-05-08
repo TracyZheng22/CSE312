@@ -182,3 +182,40 @@ h2 {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.DM{
+    background-color: palegreen;
+	background-image: radial-gradient(white 10%, transparent 10%);
+	background-size: 30px 30px;
+    height: 350px;
+    width: 300px;
+    border: solid black;
+    position: fixed;
+    bottom: 0;
+    right: 300px;
+}
+
+.close{
+    margin-left: 274px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border-style: dotted solid double;
+    border-color: white;
+    background-color: skyblue;
+}
+
+.close:hover{
+    background-color: aliceblue;
+}
+
+.chat {
+    overflow: scroll; 
+    overflow-x: hidden; 
+    width: 300px; 
+    height: 290px;
+}
+
+.chatmsg{
+    margin-left: 5px;
+    width:210px;
+}
