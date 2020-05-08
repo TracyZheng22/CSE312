@@ -22,11 +22,15 @@ import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.net.ssl.*;
+
+import org.bson.Document;
+import org.bson.types.Binary;
 
 /**
  * Main class that beings the server on the specified port and handles incoming requests through
@@ -234,19 +238,53 @@ class ServerBox extends Thread{
 					String username = headers.get("username");
 					String password = headers.get("password");
 					
+					//Check if username exists
+					if(Server.dbHandler.userExists(username)) {
+						//Send reply with error message
+						printPlainText("Failed, username exists! Please select a different username.", socket, writer);
+						return;
+					}
+					
 					//Salt and hash password
-					byte[] salted_hash = hash(password);
-					Server.dbHandler.secureWrite(username, salted_hash);
+					SecureRandom random = new SecureRandom();
+					byte[] salt = new byte[16];
+					random.nextBytes(salt);
+					byte[] salted_hash = hash(password, salt);
+					Server.dbHandler.secureWrite(username, salted_hash, salt);
+					
+					printPlainText("Successfuly Registerd! Please login from the login page!", socket, writer);
 				}else if(head[1].equals("/login")) {
 					//Grab the URI encoded registration information.
 					String username = headers.get("username");
 					String password = headers.get("password");
 					
+					if(!Server.dbHandler.userExists(username)) {
+						//Send reply with error message
+						printPlainText("Failed, incorrect username! Try again!", socket, writer);
+						return;
+					}
+					
+					Document document = Server.dbHandler.getCredentials(username);
+					
+					System.out.println("Login Attempt: " + document.getString("username"));
+					
+					byte[] salt = ((Binary) document.get("salt")).getData();
+					
 					//Salt and hash password
-					byte[] salted_hash = hash(password);
+					byte[] salted_hash = hash(password, salt);
 					
 					//Get stored password
+					byte[] stored_hash = ((Binary) document.get("password")).getData();
 					
+					//Verify
+					boolean verify = Arrays.equals(salted_hash, stored_hash);
+					
+					if(verify) {
+						System.out.println("Login successful!");
+					} else {
+						printPlainText("Failed, incorrect password! Try again!", socket, writer);
+						return;
+					}
 				}
 			}
 			//Just to make everything look pretty to read in console
@@ -264,11 +302,8 @@ class ServerBox extends Thread{
 		}
 	}
 	
-	public static byte[] hash(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+	public static byte[] hash(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		//Salting and Hashing using PBKDF2 with hmac and SHA256
-		SecureRandom random = new SecureRandom();
-		byte[] salt = new byte[16];
-		random.nextBytes(salt);
 		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 		byte[] hash = factory.generateSecret(new PBEKeySpec(password.toCharArray(), salt, 100000, 128)).getEncoded();
 		return hash;

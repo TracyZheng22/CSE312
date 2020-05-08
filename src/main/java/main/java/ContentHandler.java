@@ -55,13 +55,31 @@ public class ContentHandler {
      * @param username
      * @param salted_hash
      */
-    public void secureWrite(String username, byte[] salted_hash) {
+    public void secureWrite(String username, byte[] salted_hash, byte[] salt) {
     	System.out.println("Write to Secure! Contents Hidden For Safety");
     	Document document = new Document("username", username)
-    			.append("password", salted_hash);
+    			.append("password", salted_hash)
+    			.append("salt", salt);
     	sec.insertOne(document);
     }
     
+    public Document getCredentials(String username) {
+    	Document document = sec.find(eq("username", username)).first();
+    	return document;
+    }
+    
+    /**
+     * Writes document to base collection
+     * 
+     * @param name
+     * @param type
+     * @param msg
+     * @param likes
+     * @param file
+     * @param line2
+     * @param filename
+     * @return
+     */
     public Document write(String name, int type, String msg, int likes, byte[] file, byte[] line2, String filename) {
     	Document document = null;
     	if(type == 0) {
@@ -144,7 +162,7 @@ public class ContentHandler {
      * @return 
      */
     public ArrayList<Document> getPosts(String name, int start, int end){
-    	ArrayList<Document> docs = new ArrayList<Document>(end-start);
+    	ArrayList<Document> docs = new ArrayList<Document>();   //end-start);
     	MongoCursor<Document> cur = col.find().iterator();
     	int counter = 0;
     	while (cur.hasNext()) {
@@ -152,14 +170,32 @@ public class ContentHandler {
     		String n = doc.getString("name");
     		
     		if(n.equals(name)) {
-		        if(start <= counter && counter < end) {  
-		        	System.out.println(doc.getInteger("type"));
-		            docs.add(doc);
-		        }
+    			//Number temporarily removed due to deadline
+		        //if(start <= counter && counter < end) {  
+	        	System.out.println(doc.getInteger("type"));
+	            docs.add(doc);
+		        //}
 		        counter++;
     		}
         }
     	return docs;
+    }
+    
+    /**
+     * Check if a given username exists on the system
+     * @param username
+     * @return
+     */
+    public boolean userExists(String username){
+		MongoCursor<Document> cur = sec.find().iterator();
+		while(cur.hasNext()) {
+			Document doc = cur.tryNext();
+			String n = doc.getString("username");
+			if(username.equals(n)) {
+				return true;
+			}
+		}
+		return false;
     }
     
     /**
