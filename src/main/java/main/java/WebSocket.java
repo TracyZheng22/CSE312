@@ -135,7 +135,7 @@ public class WebSocket{
 					Document doc = Server.dbHandler.write(id, type, message, 0, null, line2, null);
 					ObjectId objid = doc.getObjectId("_id");
 					int lks = doc.getInteger("likes", 0);
-					write(type, id.getBytes(), message.getBytes(), line2, null, objid.toByteArray(), (byte) lks, false);
+					write(type, id.getBytes(), message.getBytes(), line2, null, objid.toByteArray(), (byte) lks, true);
 				}else if(type == 1) {
 					System.out.println("Post File!");
 					int file_len = (payload[0] & 0xFF);
@@ -157,7 +157,7 @@ public class WebSocket{
 						Document doc = Server.dbHandler.write(id, 1, null, 0, payload, line2, filename);
 						ObjectId objid = doc.getObjectId("_id");
 						int lks = doc.getInteger("likes", 0);
-						write(type, id.getBytes(), payload, line2, filename.getBytes(), objid.toByteArray(), (byte) lks, false);
+						write(type, id.getBytes(), payload, line2, filename.getBytes(), objid.toByteArray(), (byte) lks, true);
 						
 						//TEMPORARY: save locally
 						/*File file = new File(id + filename);
