@@ -281,6 +281,12 @@ class ServerBox extends Thread{
 					
 					if(verify) {
 						System.out.println("Login successful!");
+						
+						//Generate token
+						JsonToken[] 
+						
+						//Send templated userpage.
+						
 					} else {
 						printPlainText("Failed, incorrect password! Try again!", socket, writer);
 						return;
