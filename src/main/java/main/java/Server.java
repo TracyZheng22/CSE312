@@ -293,9 +293,18 @@ class ServerBox extends Thread{
 						System.out.println("Login successful!");
 						
 						//TODO: Generate token
-						
+						char[] buffer = new char[128];
+                        Random random = new Random();
+                        for (int i = 0; i < buffer.length; i++) {
+                            buffer[i] = (char) (33 + random.nextInt(127 - 33));
+                        }
+                        String bufString = String.valueOf(buffer);
+                        byte[] randomString = hash(bufString, salt);
+
+                        String randomHashString = String.valueOf(randomString);
+                        byte[] token = hash(randomHashString, salt);
 						//Send templated userpage.
-						sendUserPage(username, null, writer); //TODO: add token here
+						sendUserPage(username, token, writer); //TODO: add token here
 					} else {
 						//Unauthorized! Send 401.
 						print401Text("Failed, incorrect password! Try again!", socket, writer);
