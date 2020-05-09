@@ -17,8 +17,21 @@ let socket = new WebSocket('ws://' + window.location.host + '/websocket');
 socket.binaryType = "arraybuffer";
 socket.onopen = function() {
     console.log("Connected.");
-    sendRequest(4, 0, null);
+    sendInitialRequest();
 };
+
+function sendInitialRequest(){
+    console.log("Initial Request");
+    var id = document.getElementById("NameOfUser").innerHTML;
+    var buf = new Uint8Array(2 + id.length + 1 + 12);
+    buf[0] = 4;
+    buf[1] = id.length;
+    for(let i=0; i<id.length; i++){
+        buf[i+2] = id.charCodeAt(i);
+    }
+    buf[2+id+length+13]=0;
+    socket.send(buf);
+}
 
 function editFriend(type){
     var id = document.getElementById("NameOfUser").innerHTML;
@@ -288,6 +301,10 @@ function renderMessages(message) {
             tbody.appendChild(clone);
         }
     }else if(type==6){
+        if(likes==1){
+            alert("Friend Request Failed! User does not exist!");
+            return;
+        }
         console.log("Add Friend Received!");
         var friend = new TextDecoder("utf-8").decode(data.subarray(counter, data.length));
         
