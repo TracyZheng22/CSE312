@@ -10,7 +10,7 @@
             <div class="Header">
                 <div class="ProfileContainer">
                     <div class="ProfilePhoto">
-                        <img src="SpongeBob_stock_art.png" width="200">
+                        <img src="BookFaceLogo.png" width="200">
                     </div>
                     <div class="PersonalInfo">
                         <h1 class="Username" id = "NameOfUser">#####USERNAME#####</h1>
@@ -137,6 +137,15 @@
                     <input id="flcont" type="text" name="msg">
                 </div>
                 <div id="friends">
+                    <template id="friendTemplate">
+                        <div class="friendBox">
+                            <div class="profileInfo">
+                                <img class="smallProfile" src="BookFaceLogo.png">
+                                <br>
+                                <button class="smallName dmbut" onclick="getDMs(this)"></button>
+                            </div>
+                        </div>
+                    </template>
                 </div>
         </div>
         <template id = "DMtemplate">

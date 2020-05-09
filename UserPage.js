@@ -287,6 +287,15 @@ function renderMessages(message) {
             clone.querySelector(".likeButton").setAttribute("id", objstr);
             tbody.appendChild(clone);
         }
+    }else if(type==6){
+        console.log("Add Friend Received!");
+        var friend = new TextDecoder("utf-8").decode(data.subarray(counter, data.length));
+        
+        var template = document.querySelector('#friendTemplate');
+        var tbody = document.querySelector("#friends");
+        var clone = template.content.cloneNode(true);
+        clone.querySelector(".smallName").textContent = friend;
+        tbody.appendChild(clone);
     }
 }
 

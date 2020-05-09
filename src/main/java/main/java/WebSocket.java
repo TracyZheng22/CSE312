@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
+
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.bson.types.Binary;
@@ -192,7 +195,30 @@ public class WebSocket{
 					write(type, id.getBytes(), payload, line2, null, _id, (byte) likes, true);
 				}else if(type == 4) {
 					System.out.println("Initial Request! " + id);
-					ArrayList<Document> docs =  Server.dbHandler.getPosts(0, 10);
+					
+					ArrayList<String> friends = Server.dbHandler.getFriends(id);
+					for(String friend : friends) {
+						write(6, id.getBytes(), friend.getBytes(), null, null, new byte[12], (byte) likes, false);
+					}
+					
+					ArrayList<Document> unprocessed_docs =  Server.dbHandler.getPosts(0, 10);
+					
+					//Reorder documents to show friends first.
+					Queue<Document> docs = new LinkedList<Document>();
+					for(Document doc : unprocessed_docs) {
+						int t = doc.getInteger("type");
+						String name = (String) doc.get("name");
+						if((t==1 || t==2) && friends.contains(name)) {
+							docs.add(doc); 
+						}
+					}
+					
+					for(Document doc: unprocessed_docs) {
+						if(!docs.contains(doc)) {
+							docs.add(doc);
+						}
+					}
+					
 					for(Document doc : docs) {
 						int t = doc.getInteger("type");
 						byte[] n = ((String) doc.get("name")).getBytes();
@@ -224,8 +250,6 @@ public class WebSocket{
 						int lks = doc.getInteger("likes", 0);
 						write(t,n,m,l2,fn, objid, (byte) lks, false);
 					}
-					
-					//Send friend's list
 					
 				}else if(type == 6) {
 					System.out.println("Add Friend! id: " + id);

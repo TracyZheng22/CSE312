@@ -75,8 +75,8 @@ public class ContentHandler {
     	return document;
     }
     
-    public ArrayList<Document> getFriends(String username){
-    	ArrayList<Document> fl = (ArrayList<Document>) sec.find(eq("username", username)).first().get("friends");
+    public ArrayList<String> getFriends(String username){
+    	ArrayList<String> fl = (ArrayList<String>) sec.find(eq("username", username)).first().get("friends");
     	return fl;
     }
     
