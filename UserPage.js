@@ -20,14 +20,22 @@ socket.onopen = function() {
     sendRequest(4, 0, null);
 };
 
-function addFriend(){
+function editFriend(type){
+    var id = document.getElementById("NameOfUser").innerHTML;
     var user = document.getElementById("flcont").value;
-    console.log("Add Friend " + user);
-}
-
-function unFriend(){
-    var user = document.getElementById("flcont").value;
-    console.log("Remove Friend " + user);
+    console.log("Edit Friend " + user + " type: " + type);
+    var buf = new Uint8Array(2 + id.length + user.length + 13);
+    buf[0] = type;
+    buf[1] = id.length;
+    for(let i=0; i<id.length; i++){
+        buf[i+2] = id.charCodeAt(i);
+    }
+    var counter = 2+id.length+13;
+    for(let i=0; i<user.length; i++){
+        buf[i+counter] = user.charCodeAt(i);
+    }
+    socket.send(buf);
+    document.getElementById("flcont").value = '';
 }
 
 function sendRequest(type, n, objid){

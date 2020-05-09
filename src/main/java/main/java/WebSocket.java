@@ -21,6 +21,7 @@ import org.bson.types.Binary;
  */
 public class WebSocket{
 	Socket socket;
+	String username; 
 	String key;
 	byte[] sha1;
 	//Ryan Note: Combined for String.contains()
@@ -223,6 +224,28 @@ public class WebSocket{
 						int lks = doc.getInteger("likes", 0);
 						write(t,n,m,l2,fn, objid, (byte) lks, false);
 					}
+					
+					//Send friend's list
+					
+				}else if(type == 6) {
+					System.out.println("Add Friend! id: " + id);
+					//Convert payload to string
+					String friend = new String(payload);
+					friend = injectionDefense(friend);
+					System.out.println("Friend: " + friend);
+					ArrayList<Document> docs = Server.dbHandler.addFriend(id, friend);
+					
+					if(docs==null) {
+						likes = 1; //Signifies friend not found, only send to user to save computation
+						write(type, id.getBytes(), friend.getBytes(), line2, null, new byte[12], (byte) likes, false);
+						continue;
+					}
+					
+					//Send back friend to user
+					write(type, id.getBytes(), friend.getBytes(), line2, null, new byte[12], (byte) likes, false);
+					
+					//Send user to friend
+					//TODO: FriendSocket.write(type, friend.getBytes(), line2, null, new byte[12], (byte) likes, false)
 				}
 			} catch (IOException e) {				
 				//Clean up socket list.

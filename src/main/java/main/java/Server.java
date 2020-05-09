@@ -199,6 +199,10 @@ class ServerBox extends Thread{
 					if(headers.get("Connection").equals("Upgrade") && headers.get("Upgrade").equals("websocket")) {
 						//Take this key
 						String key = headers.get("Sec-WebSocket-Key");
+						
+						//TODO: Check token for websocket!
+						//Token check for websocket auth:
+						
 						//Append header to key
 						key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 						WebSocket sock = new WebSocket(socket, key);

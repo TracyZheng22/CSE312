@@ -5,6 +5,8 @@ import com.mongodb.client.MongoClient;
  import com.mongodb.client.MongoCollection;
  import com.mongodb.client.MongoCursor;
  import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Updates;
+
 import static com.mongodb.client.model.Filters.*;
 
 import java.util.ArrayList;
@@ -63,9 +65,19 @@ public class ContentHandler {
     	sec.insertOne(document);
     }
     
+    /**
+     * Gets credentials from secure collection
+     * @param username
+     * @return
+     */
     public Document getCredentials(String username) {
     	Document document = sec.find(eq("username", username)).first();
     	return document;
+    }
+    
+    public ArrayList<Document> getFriends(String username){
+    	ArrayList<Document> fl = (ArrayList<Document>) sec.find(eq("username", username)).first().get("friends");
+    	return fl;
     }
     
     /**
@@ -228,6 +240,20 @@ public class ContentHandler {
 	        }
         }
     	return docs;
+    }
+    
+    public ArrayList<Document> addFriend(String username, String friend) {
+    	if(sec.find(eq("username", username)).limit(1).first() == null || sec.find(eq("username", friend)).limit(1).first() == null) {
+    		return null;
+    	}
+    	sec.updateOne(eq("username", username), Updates.addToSet("friends", friend));
+    	sec.updateOne(eq("username", friend), Updates.addToSet("friends", username));
+    	Document document1 = sec.find(eq("username", username)).limit(1).first();
+    	Document document2 = sec.find(eq("username", friend)).limit(1).first();
+    	ArrayList<Document> ret = new ArrayList<Document>();
+    	ret.add(document1);
+    	ret.add(document2);
+    	return ret;
     }
 
     /**
