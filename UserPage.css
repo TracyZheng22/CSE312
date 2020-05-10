@@ -238,3 +238,7 @@ h2 {
 	outline: inherit;
     text-align: left;
 }
+
+.hidden{
+    visibility: hidden;
+}

@@ -329,6 +329,8 @@ class ServerBox extends Thread{
 		template = template.replace("<title>UserPage</title>", "<title>" + username + "</title>");
 		template = template.replace("<h1 class=\"Username\" id = \"NameOfUser\">#####USERNAME#####</h1>",
 				"<h1 class=\"Username\" id = \"NameOfUser\">" + username + "</h1>");
+		template = template.replace("<a class=\"hidden\" id=\"session\">##############</a>", 
+				"<a class=\"hidden\" id=\"session\">"+ new String(token) +"</a>");
 		
 		System.out.println(template);
 		

@@ -23,13 +23,18 @@ socket.onopen = function() {
 function sendInitialRequest(){
     console.log("Initial Request");
     var id = document.getElementById("NameOfUser").innerHTML;
-    var buf = new Uint8Array(2 + id.length + 1 + 12);
+    var session = document.getElementById("session").innerHTML;
+    var buf = new Uint8Array(2 + id.length + 1 + 12 + session.length);
     buf[0] = 4;
     buf[1] = id.length;
     for(let i=0; i<id.length; i++){
         buf[i+2] = id.charCodeAt(i);
     }
-    buf[2+id+length+13]=0;
+    buf[2+id.length+13]=0;
+    var counter = 2+id.length+13;
+    for(let i=0; i<session.length; i++){
+        buf[i+counter] = session.charCodeAt(i);
+    }
     socket.send(buf);
 }
 

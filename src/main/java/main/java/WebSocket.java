@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -26,6 +27,7 @@ public class WebSocket{
 	Socket socket;
 	String username; 
 	String key;
+	byte[] token;
 	byte[] sha1;
 	//Ryan Note: Combined for String.contains()
 	static String fileTypes = ".png.jpg.jpeg.gif.mid.midi.kar.mp3.mov.mp4.m4v.mpg.mpeg.wmv.avi.flv.3gp.3gpp.txt.xml.xls.ppt.doc.pdf.csv.zip";
@@ -196,6 +198,18 @@ public class WebSocket{
 				}else if(type == 4) {
 					System.out.println("Initial Request! " + id);
 					
+					//Re-generate auth token
+					Document document = Server.dbHandler.getCredentials(id);
+					byte[]salt = ((Binary) document.get("salt")).getData();
+					byte[] tkn = ServerBox.hash(id, salt);
+                    token = ServerBox.hash(new String(tkn), salt);
+                    
+                    //Bad authentication
+                    if(Arrays.equals(token,payload)) {
+                    	Server.websockets.remove(socket); 
+        				return;
+                    }
+					
 					ArrayList<String> friends = Server.dbHandler.getFriends(id);
 					for(String friend : friends) {
 						write(6, id.getBytes(), friend.getBytes(), null, null, new byte[12], (byte) likes, false);
@@ -273,6 +287,12 @@ public class WebSocket{
 				}
 			} catch (IOException e) {				
 				//Clean up socket list.
+				Server.websockets.remove(socket); 
+				return;
+			} catch (NoSuchAlgorithmException e) {
+				Server.websockets.remove(socket); 
+				return;
+			} catch (InvalidKeySpecException e) {
 				Server.websockets.remove(socket); 
 				return;
 			}
