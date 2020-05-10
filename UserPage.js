@@ -318,6 +318,16 @@ function renderMessages(message) {
         var clone = template.content.cloneNode(true);
         clone.querySelector(".smallName").textContent = friend;
         tbody.appendChild(clone);
+    }else if(type==7){
+        var elems = document.getElementsByClassName("dmbut");
+        
+        console.log("Remove Friend Received!");
+        var friend = new TextDecoder("utf-8").decode(data.subarray(counter, data.length));
+        for(var e of elems){
+            if(e.innerText==friend){
+                e.parentElement.parentElement.parentElement.removeChild(e.parentElement.parentElement);
+            }
+        }
     }
 }
 

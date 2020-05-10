@@ -284,6 +284,25 @@ public class WebSocket{
 					
 					//Send user to friend
 					//TODO: FriendSocket.write(type, friend.getBytes(), line2, null, new byte[12], (byte) likes, false)
+				} else if(type == 7) {
+					System.out.println("Remove Friend! id: " + id);
+					//Convert payload to string
+					String friend = new String(payload);
+					friend = injectionDefense(friend);
+					System.out.println("Friend: " + friend);
+					ArrayList<Document> docs = Server.dbHandler.removeFriend(id, friend);
+					
+					if(docs==null) {
+						likes = 1; //Signifies friend not found, only send to user to save computation
+						write(type, id.getBytes(), friend.getBytes(), line2, null, new byte[12], (byte) likes, false);
+						continue;
+					}
+					
+					//Send back friend to user
+					write(type, id.getBytes(), friend.getBytes(), line2, null, new byte[12], (byte) likes, false);
+					
+					//Send user to friend
+					//TODO: FriendSocket.write(type, friend.getBytes(), line2, null, new byte[12], (byte) likes, false)
 				}
 			} catch (IOException e) {				
 				//Clean up socket list.

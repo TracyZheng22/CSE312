@@ -255,6 +255,20 @@ public class ContentHandler {
     	ret.add(document2);
     	return ret;
     }
+    
+    public ArrayList<Document> removeFriend(String username, String friend) {
+    	if(sec.find(eq("username", username)).limit(1).first() == null || sec.find(eq("username", friend)).limit(1).first() == null) {
+    		return null;
+    	}
+    	sec.updateOne(eq("username", username), Updates.pull("friends", friend));
+    	sec.updateOne(eq("username", friend), Updates.pull("friends", username));
+    	Document document1 = sec.find(eq("username", username)).limit(1).first();
+    	Document document2 = sec.find(eq("username", friend)).limit(1).first();
+    	ArrayList<Document> ret = new ArrayList<Document>();
+    	ret.add(document1);
+    	ret.add(document2);
+    	return ret;
+    }
 
     /**
      * Finds if it a document is a comment to a post. This works because there cannot be a post after a comment.
