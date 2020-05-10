@@ -214,8 +214,11 @@ public class WebSocket{
                     }
 					
 					ArrayList<String> friends = Server.dbHandler.getFriends(id);
-					for(String friend : friends) {
-						write(6, id.getBytes(), friend.getBytes(), null, null, new byte[12], (byte) likes, false);
+					
+					if(friends!=null) {
+						for(String friend : friends) {
+							write(6, id.getBytes(), friend.getBytes(), null, null, new byte[12], (byte) likes, false);
+						}
 					}
 					
 					ArrayList<Document> unprocessed_docs =  Server.dbHandler.getPosts(0, 10);
