@@ -255,6 +255,13 @@ class ServerBox extends Thread{
 					String username = headers.get("username");
 					String password = headers.get("password");
 					
+					//Check if username is too long or short
+					if(username.length()<6 || username.length()>20) {
+						//Send reply with error message
+						printPlainText("Failed, invalid username length! Please select a different username.", socket, writer);
+						return;
+					}
+					
 					//Check if username exists
 					if(Server.dbHandler.userExists(username)) {
 						//Send reply with error message
