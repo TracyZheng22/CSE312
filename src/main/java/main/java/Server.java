@@ -292,17 +292,9 @@ class ServerBox extends Thread{
 					if(verify) {
 						System.out.println("Login successful!");
 						
-						//TODO: Generate token
-						char[] buffer = new char[128];
-                        Random random = new Random();
-                        for (int i = 0; i < buffer.length; i++) {
-                            buffer[i] = (char) (33 + random.nextInt(127 - 33));
-                        }
-                        String bufString = String.valueOf(buffer);
-                        byte[] randomString = hash(bufString, salt);
-
-                        String randomHashString = String.valueOf(randomString);
-                        byte[] token = hash(randomHashString, salt);
+						//Generate token
+                        byte[] token = hash(username, salt);
+                        token = hash(new String(token), salt);
 						//Send templated userpage.
 						sendUserPage(username, token, writer); //TODO: add token here
 					} else {
@@ -350,6 +342,7 @@ class ServerBox extends Thread{
 		writer.println("Content-Type: " + type + "; charset=utf-8");
 		writer.println("Connection: close");
 		writer.println("Content-Length: " + length);
+		writer.println("Set-Cookie: session="+new String(token));
 		writer.println();
 		socket.getOutputStream().write(bytes);
 	}
@@ -421,7 +414,6 @@ class ServerBox extends Thread{
 		writer.println("Content-Type: " + type + "; charset=utf-8");
 		writer.println("Connection: close");
 		writer.println("Content-Length: " + length);
-		writer.println("Set-Cookie: visit=true; Max-Age: 10000");
 		writer.println();
 		String line;
 		if(type.contains("image")) {
