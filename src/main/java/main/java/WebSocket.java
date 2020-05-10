@@ -1,5 +1,6 @@
 package main.java;
 
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -200,7 +201,7 @@ public class WebSocket{
 					
 					//Re-generate auth token
 					Document document = Server.dbHandler.getCredentials(id);
-					byte[]salt = ((Binary) document.get("salt")).getData();
+					byte[] salt = ((Binary) document.get("salt")).getData();
 					byte[] tkn = ServerBox.hash(id, salt);
                     token = ServerBox.hash(new String(tkn), salt);
                     
@@ -275,15 +276,20 @@ public class WebSocket{
 					
 					if(docs==null) {
 						likes = 1; //Signifies friend not found, only send to user to save computation
-						write(type, id.getBytes(), friend.getBytes(), line2, null, new byte[12], (byte) likes, false);
+						write(type, id.getBytes(), friend.getBytes(), null, null, new byte[12], (byte) likes, false);
 						continue;
 					}
 					
 					//Send back friend to user
-					write(type, id.getBytes(), friend.getBytes(), line2, null, new byte[12], (byte) likes, false);
+					write(type, id.getBytes(), friend.getBytes(), null, null, new byte[12], (byte) likes, false);
 					
 					//Send user to friend
-					//TODO: FriendSocket.write(type, friend.getBytes(), line2, null, new byte[12], (byte) likes, false)
+					Document document = Server.dbHandler.getCredentials(friend);
+					byte[] salt = ((Binary) document.get("salt")).getData();
+					ArrayList<WebSocket> friendSockets = Server.findFriend(friend, salt);
+					for(WebSocket friendSocket : friendSockets) {
+						friendSocket.write(type, friend.getBytes(), id.getBytes(), null, null, new byte[12], (byte) likes, false);
+					}
 				} else if(type == 7) {
 					System.out.println("Remove Friend! id: " + id);
 					//Convert payload to string
@@ -302,6 +308,51 @@ public class WebSocket{
 					write(type, id.getBytes(), friend.getBytes(), line2, null, new byte[12], (byte) likes, false);
 					
 					//Send user to friend
+					Document document = Server.dbHandler.getCredentials(friend);
+					byte[] salt = ((Binary) document.get("salt")).getData();
+					ArrayList<WebSocket> friendSockets = Server.findFriend(friend, salt);
+					for(WebSocket friendSocket : friendSockets) {
+						friendSocket.write(type, friend.getBytes(), id.getBytes(), null, null, new byte[12], (byte) likes, false);
+					}
+				} else if(type==8) {
+					//Authenticate
+					
+					//Send DMs
+					
+				} else if(type==9) {
+					//Get friend
+					int counter = 0;
+					int fc = payload[counter];
+					counter++;
+					String friend = new String(Arrays.copyOfRange(payload, counter, counter+fc));
+					counter+=fc;
+					friend = injectionDefense(friend);
+					
+					//Get message length
+					int ml = payload[counter];
+					
+					//Limit message length to preserve line2 in frame.
+					if(ml>=40) {
+						//Ignore DM
+						continue;
+					}
+					
+					counter++;
+					String dm = new String(Arrays.copyOfRange(payload, counter, counter+ml));
+					counter+=ml;
+					
+					//Authenticate
+					if(!Arrays.equals(Arrays.copyOfRange(payload, counter, payload.length), token)) {
+						//Invalid authentication. Quit connection.
+						Server.websockets.remove(socket); 
+						return;
+					}
+					
+					//Now that this permission is granted, save DM to collection
+					Document document = Server.dbHandler.addDM(id, friend, dm);
+					
+					//Send to user and friend
+					write(type, id.getBytes(), friend.getBytes(), null, null, new byte[12], (byte) likes, false);
 					//TODO: FriendSocket.write(type, friend.getBytes(), line2, null, new byte[12], (byte) likes, false)
 				}
 			} catch (IOException e) {				

@@ -20,7 +20,7 @@ import org.bson.types.ObjectId;
  * Accesses and handles our database.
  */
 public class ContentHandler {
-	
+	MongoDatabase csDatabase;
 	MongoCollection<Document> col;
 	MongoCollection<Document> sec;
 	//GridFSBucket gridFSBucket;
@@ -29,7 +29,7 @@ public class ContentHandler {
 		MongoClient mongoClient = MongoClients.create("mongodb+srv://cse312g20:2020sucks@team20-fb7o8.azure.mongodb.net/test?retryWrites=true&w=majority");
 
         //MongoDatabase csDatabase = mongoClient.getDatabase("CSE312");
-        MongoDatabase csDatabase = mongoClient.getDatabase("Team20");
+        csDatabase = mongoClient.getDatabase("Team20");
         col = csDatabase.getCollection("CSE312 Group");
         sec = csDatabase.getCollection("Secure");
         //gridFSBucket = GridFSBuckets.create(csDatabase);
@@ -285,5 +285,24 @@ public class ContentHandler {
 			}
 		}
 		return false;
+	}
+
+	public Document addDM(String id, String friend, String dm) {
+		//Sort alphabetically for ease of search
+		String colname = sortAlphaId(id,friend);
+		MongoCollection<Document> dms = csDatabase.getCollection(colname);
+		Document document = new Document("name", id)
+				.append("dm", dm);
+		dms.insertOne(document);
+		return document;
+	}
+	
+	public String sortAlphaId(String id1, String id2) {
+		if(id1.compareToIgnoreCase(id2)==1) {
+			return id1 + "x" + id2;
+		}else if(id1.compareToIgnoreCase(id2) == -1) {
+			return id2 + "x" + id1;
+		}
+		return "ERROR! This should never be the case since usernames must be unique";
 	}
 }

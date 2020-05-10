@@ -22,6 +22,7 @@ import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -114,6 +115,18 @@ public class Server {
 				e.printStackTrace();
 			}
 		}	
+	}
+
+	public static ArrayList<WebSocket> findFriend(String friend, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		ArrayList<WebSocket> ret = new ArrayList<WebSocket>();
+		byte[] token = ServerBox.hash(friend, salt);
+        token = ServerBox.hash(new String(token), salt);
+		for(WebSocket s : websockets.values()){
+			if(Arrays.equals(s.token, token)) {
+				ret.add(s);
+			}
+		}
+		return ret;
 	}
 }
 
