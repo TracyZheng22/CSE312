@@ -196,12 +196,32 @@ h2 {
 }
 
 .close{
-    margin-left: 274px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     border-radius: 8px;
     border-style: dotted solid double;
     border-color: white;
     background-color: skyblue;
+}
+
+.dmr{
+    width: 270px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    float:left;
+    
+    background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+    text-align: left;
+    
+    margin-top: 5px;
+    margin-left: 5px;
+    padding-bottom: 5px;
+    border-bottom: solid white;
 }
 
 .close:hover{
@@ -212,12 +232,12 @@ h2 {
     overflow: scroll; 
     overflow-x: hidden; 
     width: 300px; 
-    height: 290px;
+    height: 280px;
 }
 
 .chatmsg{
     margin-left: 5px;
-    width:210px;
+    width:220px;
 }
 
 .friendBox{

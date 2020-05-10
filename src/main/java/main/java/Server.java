@@ -24,6 +24,7 @@ import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 
 import javax.crypto.SecretKeyFactory;
@@ -350,7 +351,7 @@ class ServerBox extends Thread{
 		template = template.replace("<h1 class=\"Username\" id = \"NameOfUser\">#####USERNAME#####</h1>",
 				"<h1 class=\"Username\" id = \"NameOfUser\">" + username + "</h1>");
 		template = template.replace("<a class=\"hidden\" id=\"session\">##############</a>", 
-				"<a class=\"hidden\" id=\"session\">"+ new String(token) +"</a>");
+				"<a class=\"hidden\" id=\"session\">"+ Base64.getEncoder().encodeToString(token) +"</a>");
 		
 		System.out.println(template);
 		

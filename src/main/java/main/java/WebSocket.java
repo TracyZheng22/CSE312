@@ -206,9 +206,11 @@ public class WebSocket{
                     token = ServerBox.hash(new String(tkn), salt);
                     
                     //Bad authentication
-                    if(Arrays.equals(token,payload)) {
+                    if(!Arrays.equals(token,Base64.getDecoder().decode(payload))) {
+                    	System.out.println(Arrays.toString(payload));
+    		        	System.out.println(Arrays.toString(token));
                     	Server.websockets.remove(socket); 
-        				return;
+        				continue;
                     }
 					
 					ArrayList<String> friends = Server.dbHandler.getFriends(id);
@@ -315,10 +317,41 @@ public class WebSocket{
 						friendSocket.write(type, friend.getBytes(), id.getBytes(), null, null, new byte[12], (byte) likes, false);
 					}
 				} else if(type==8) {
-					//Authenticate
+					//Get friend
+					int counter = 0;
+					int fc = payload[counter];
+					counter++;
+					String friend = new String(Arrays.copyOfRange(payload, counter, counter+fc));
+					System.out.println("Friend: " + friend);
+					counter+=fc;
+					friend = injectionDefense(friend);
 					
+					//Check if friend is on friends list
+					if(!Server.dbHandler.isFriend(id, friend)) {
+						//No such friend. No authorization, so ignore.
+						continue;
+					}
+			        
+			        //Authenticate
+			        byte[] tkn = Base64.getDecoder().decode(Arrays.copyOfRange(payload, counter, payload.length));
+					if(!Arrays.equals(tkn, token)) {
+						//Invalid authentication. Quit connection.
+						Server.websockets.remove(socket); 
+						continue;
+					}
+			        
 					//Send DMs
+					ArrayList<Document> docs = Server.dbHandler.getDMs(id, friend);
 					
+					for(Document doc : docs) {
+						String name = doc.getString("name");
+						String dm = doc.getString("dm");
+						if(name.equals(id)) {
+							write(9, id.getBytes(), dm.getBytes(), null, friend.getBytes(), new byte[12], (byte) likes, false);
+						}else {
+							write(9, friend.getBytes(), dm.getBytes(), null, id.getBytes(), new byte[12], (byte) likes, false);
+						}
+					}	
 				} else if(type==9) {
 					//Get friend
 					int counter = 0;
@@ -339,21 +372,29 @@ public class WebSocket{
 					
 					counter++;
 					String dm = new String(Arrays.copyOfRange(payload, counter, counter+ml));
+					dm = injectionDefense(dm);
 					counter+=ml;
 					
 					//Authenticate
-					if(!Arrays.equals(Arrays.copyOfRange(payload, counter, payload.length), token)) {
+					byte[] tkn = Base64.getDecoder().decode(Arrays.copyOfRange(payload, counter, payload.length));
+					if(!Arrays.equals(tkn, token)) {
 						//Invalid authentication. Quit connection.
 						Server.websockets.remove(socket); 
-						return;
+						continue;
 					}
 					
 					//Now that this permission is granted, save DM to collection
 					Document document = Server.dbHandler.addDM(id, friend, dm);
 					
 					//Send to user and friend
-					write(type, id.getBytes(), friend.getBytes(), null, null, new byte[12], (byte) likes, false);
-					//TODO: FriendSocket.write(type, friend.getBytes(), line2, null, new byte[12], (byte) likes, false)
+					write(type, id.getBytes(), dm.getBytes(), null, friend.getBytes(), new byte[12], (byte) likes, false);
+					
+					Document auth = Server.dbHandler.getCredentials(friend);
+					byte[] salt = ((Binary) auth.get("salt")).getData();
+					ArrayList<WebSocket> friendSockets = Server.findFriend(friend, salt);
+					for(WebSocket friendSocket : friendSockets) {
+						friendSocket.write(type, id.getBytes(), dm.getBytes(), null, friend.getBytes(), new byte[12], (byte) likes, false);
+					}
 				}
 			} catch (IOException e) {				
 				//Clean up socket list.

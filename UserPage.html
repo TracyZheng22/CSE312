@@ -149,16 +149,22 @@
                     </template>
                 </div>
         </div>
+        <div id="inbox">
+        </div>
         <template id = "DMtemplate">
             <div class="DM">
+                <button onclick="hideDM(this)" class="dmr"></button>
                 <button class="close" onclick="this.parentElement.parentElement.removeChild(this.parentElement)">X</button>
                 <div class="chat">
                 </div>
                 <form onsubmit="sendDM(this); return false;" class="chatform">
                     <input class="chatmsg" type="text" name="msg">
-                    <input type="submit" value="Submit">
+                    <input type="submit" value="Send">
                 </form>
             </div>
+        </template>
+        <template id="chatTemplate">
+            <a class="dmmsg"></a>
         </template>
         <script type="text/javascript" src="UserPage.js"></script>
     </body>

@@ -298,11 +298,28 @@ public class ContentHandler {
 	}
 	
 	public String sortAlphaId(String id1, String id2) {
-		if(id1.compareToIgnoreCase(id2)==1) {
+		if(id1.compareTo(id2)>0) {
 			return id1 + "x" + id2;
-		}else if(id1.compareToIgnoreCase(id2) == -1) {
+		}else if(id1.compareTo(id2)<0) {
 			return id2 + "x" + id1;
 		}
 		return "ERROR! This should never be the case since usernames must be unique";
+	}
+
+	public ArrayList<Document> getDMs(String id, String friend) {
+		ArrayList<Document> docs = new ArrayList<Document>();
+		String colname = sortAlphaId(id,friend);
+		MongoCollection<Document> dms = csDatabase.getCollection(colname);
+    	MongoCursor<Document> cur = dms.find().iterator();
+    	while (cur.hasNext()) {
+    		Document doc = cur.tryNext();
+	        docs.add(doc);
+        }
+    	return docs;
+	}
+	
+	public boolean isFriend(String username, String friend) {
+		ArrayList<String> friends = getFriends(username);
+		return friends.contains(friend);
 	}
 }

@@ -328,6 +328,43 @@ function renderMessages(message) {
                 e.parentElement.parentElement.parentElement.removeChild(e.parentElement.parentElement);
             }
         }
+    }else if(type==9){
+        console.log("DM Received!");
+        var rl = data[counter];
+        counter++;
+        var recipientd = new Uint8Array(rl);
+        for(let i=0; i<rl; i++){
+            recipientd[i] = data[i+counter];
+        }
+        counter+=rl;
+        var recipient = new TextDecoder("utf-8").decode(recipientd);
+        var msg = new TextDecoder("utf-8").decode(data.subarray(counter, data.length));
+        
+        //Check if the right DM box is set, if not, ignore and change dm boxes.
+        var c1 = document.getElementById("NameOfUser").innerHTML;
+        var c2 = document.getElementsByClassName("dmr")[0];
+        if(c2!=null){
+            c2=c2.innerHTML;
+        }
+        if((recipient == c1 || recipient==c2) && (id == c1 || id == c2)){
+            console.log("New DM Added to panel");
+            var tbody = document.getElementsByClassName("chat")[0];
+            var template = document.querySelector('#chatTemplate');
+            var clone = template.content.cloneNode(true);
+            clone.querySelector(".dmmsg").textContent = id + ": " + msg;
+            clone.querySelector(".dmmsg").innerHTML += "<br>";
+            tbody.appendChild(clone);
+            
+        } else if (recipient==c1){
+            console.log("New DM Message Unopened!");
+            var fl = document.getElementById("friends").getElementsByClassName("dmbut");
+            for(var f of fl){
+                if(f.innerHTML == id){
+                    getDMs(f);
+                }
+            }
+        }
+        
     }
 }
 
@@ -349,6 +386,87 @@ function collapse(col) {
       postDiv.style.display = "block";
     }
 }
+
+function getDMs(friend){
+    console.log("DM REQUEST!")
+    
+    friend=friend.innerHTML;
+    
+    //Remove previous DM template
+    var inbox = document.getElementById("inbox");
+    inbox.innerHTML = '';
+    
+    //Generate new DM template
+    var template = document.querySelector('#DMtemplate');
+    var tbody = document.querySelector("#inbox");
+    var clone = template.content.cloneNode(true);
+    clone.querySelector(".dmr").textContent = friend;
+    tbody.appendChild(clone);
+    
+    //Send DM Request
+    var type = 8;
+    var id = document.getElementById("NameOfUser").innerHTML;
+    var file = document.getElementById("session").innerHTML;
+    var filename = friend;
+    
+    buf = new Uint8Array(file.length + 3 + id.length + filename.length + 13);
+    buf[0] = type;
+    buf[1] = id.length;
+    for(let i=0; i<id.length; i++){
+        buf[i+2] = id.charCodeAt(i);
+    }
+    counter = 2+id.length+12;
+    buf[counter] = 0;
+    counter++;
+    buf[counter] = filename.length;
+    counter++;
+    for(let i=0; i<filename.length; i++){
+        buf[i+counter] = filename.charCodeAt(i);
+    }
+    counter += filename.length;
+    for(let i=0; i<file.length; i++){
+        buf[i+counter] = file.charCodeAt(i);
+    }
+    socket.send(buf);
+}
+
+function sendDM(curr){
+    console.log("Send DM!")
+    
+    friend=curr.parentElement.firstElementChild.innerHTML;
+    console.log("Recipient: " + friend)
+    
+    //Send DM
+    var type = 9;
+    var id = document.getElementById("NameOfUser").innerHTML;
+    var message = curr.getElementsByClassName("chatmsg")[0].value;
+    var file = document.getElementById("session").innerHTML;
+    var filename = friend;
+    
+    buf = new Uint8Array(file.length + 3 + id.length + filename.length + 13 + 1 + message.length);
+    buf[0] = type;
+    buf[1] = id.length;
+    for(let i=0; i<id.length; i++){
+        buf[i+2] = id.charCodeAt(i);
+    }
+    counter = 2+id.length+13;
+    buf[counter] = filename.length; 
+    counter++;
+    for(let i=0; i<filename.length; i++){
+        buf[i+counter] = filename.charCodeAt(i);
+    }
+    counter += filename.length;
+    buf[counter] = message.length;
+    counter++;
+    for(let i=0; i<message.length; i++){
+        buf[i+counter] = message.charCodeAt(i);
+    }
+    counter += message.length;
+    for(let i=0; i<file.length; i++){
+        buf[i+counter] = file.charCodeAt(i);
+    }
+    socket.send(buf);
+}
                            
 
 var open = false;
@@ -360,6 +478,18 @@ function friendsList() {
     } else {
         fl.style.bottom = "-330px";
         open = false;
+    }
+}
+
+var opendm = false;
+function hideDM(fl) {
+    fl=fl.parentElement;
+    if (!opendm) {
+        fl.style.bottom = "0";
+        opendm = true;
+    } else {
+        fl.style.bottom = "-330px";
+        opendm = false;
     }
 }
 
