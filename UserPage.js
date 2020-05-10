@@ -466,6 +466,7 @@ function sendDM(curr){
         buf[i+counter] = file.charCodeAt(i);
     }
     socket.send(buf);
+    curr.reset();
 }
                            
 
