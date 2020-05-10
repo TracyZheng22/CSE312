@@ -228,7 +228,7 @@ public class WebSocket{
 					for(Document doc : unprocessed_docs) {
 						int t = doc.getInteger("type");
 						String name = (String) doc.get("name");
-						if((t==1 || t==2) && friends.contains(name)) {
+						if((t==1 || t==2) && (friends==null || friends.contains(name))) {
 							docs.add(doc); 
 						}
 					}
